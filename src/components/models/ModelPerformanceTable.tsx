@@ -3,7 +3,7 @@ import { EmptyState } from "@/components/common/States";
 import { NA, formatNumber, formatPercent } from "@/lib/utils/format";
 import type { ModelPerformance } from "@/lib/types";
 
-const fmtPct = (v: number | null) => (v == null ? NA : formatPercent(v * 100, { signed: false }));
+const fmtPct = (v: number | null) => (v == null ? NA : formatPercent(v * 100, 1, false));
 const fmt3 = (v: number | null) => (v == null ? NA : formatNumber(v, 3));
 
 /** Classification + regression metrics per model. Backtested — not live performance. */
