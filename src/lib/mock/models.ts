@@ -1,0 +1,58 @@
+import type {
+  BaselineComparison,
+  ModelName,
+  ModelPerformance,
+  ModelPerformanceReport,
+  WalkForwardPeriod,
+} from "@/lib/types";
+import { mulberry32, round, seedFrom } from "./generators";
+
+const MODELS: ModelName[] = ["Logistic Regression", "Random Forest", "XGBoost", "Ensemble"];
+
+export function buildModelReport(): ModelPerformanceReport {
+  const rand = mulberry32(seedFrom("model-report-v1"));
+
+  const models: ModelPerformance[] = MODELS.map((model, i) => {
+    const acc = round(0.52 + i * 0.02 + rand() * 0.04, 3);
+    return {
+      model,
+      classification: {
+        accuracy: acc,
+        precision: round(acc + (rand() - 0.5) * 0.04, 3),
+        recall: round(acc - rand() * 0.05, 3),
+        f1: round(acc - rand() * 0.02, 3),
+        rocAuc: round(acc + 0.04 + rand() * 0.03, 3),
+        logLoss: round(0.62 - i * 0.02 - rand() * 0.03, 3),
+        brier: round(0.24 - i * 0.01 - rand() * 0.02, 3),
+      },
+      regression: {
+        mae: round(1.8 - i * 0.1 + rand() * 0.3, 2),
+        rmse: round(2.6 - i * 0.1 + rand() * 0.3, 2),
+      },
+    };
+  });
+
+  const quarters = ["2024 Q1", "2024 Q2", "2024 Q3", "2024 Q4", "2025 Q1"];
+  const walkForward: WalkForwardPeriod[] = quarters.map((period, i) => ({
+    period,
+    trainWindow: `rolling 24m → ${period}`,
+    testWindow: period,
+    accuracy: round(0.53 + rand() * 0.06, 3),
+    rocAuc: round(0.57 + rand() * 0.06, 3),
+  }));
+
+  const baselines: BaselineComparison[] = [
+    { name: "Naive Baseline", accuracy: 0.5, rocAuc: 0.5, note: "Majority-class / random walk reference" },
+    { name: "Technical-only", accuracy: round(0.53 + rand() * 0.02, 3), rocAuc: round(0.55 + rand() * 0.02, 3) },
+    { name: "Fundamental-only", accuracy: round(0.52 + rand() * 0.02, 3), rocAuc: round(0.54 + rand() * 0.02, 3) },
+    { name: "News-only", accuracy: round(0.515 + rand() * 0.02, 3), rocAuc: round(0.53 + rand() * 0.02, 3) },
+    { name: "Multi-source", accuracy: round(0.57 + rand() * 0.02, 3), rocAuc: round(0.6 + rand() * 0.02, 3), note: "Combined feature set" },
+  ];
+
+  return {
+    models,
+    walkForward,
+    baselines,
+    evaluatedAt: new Date().toISOString(),
+  };
+}
