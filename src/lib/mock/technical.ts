@@ -90,7 +90,7 @@ export function buildTechnical(ticker: string): TechnicalAnalysis | null {
     { key: "ema", label: "EMA (20)", value: round(last20 * 1.002), interpretation: "Short-term trend reference", status: "neutral" },
     { key: "atr", label: "ATR (14)", value: atr, interpretation: "Average true range", status: "neutral", context: "Absolute volatility in price units." },
     { key: "momentum", label: "Momentum", value: momentum, unit: "%", interpretation: momentum > 0 ? "Positive" : "Negative", status: momentum > 0 ? "positive" : "negative" },
-    { key: "volatility", label: "Volatility (annualized)", value: volatility, unit: "%", interpretation: volatility > 25 ? "Elevated" : "Contained", status: volatility > 25 ? "warning" : "neutral" },
+    { key: "volatility", label: "Volatility (annualized)", value: volatility, unit: "%", interpretation: volatility > 25 ? "Elevated" : "Contained", status: volatility > 25 ? "mixed" : "neutral" },
   ];
 
   return {

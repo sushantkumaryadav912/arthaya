@@ -58,7 +58,7 @@ export function PriceChart({
         <CartesianGrid stroke={GRID_STROKE} vertical={false} />
         <XAxis dataKey="t" tickFormatter={fmtDate} stroke={AXIS.stroke} fontSize={AXIS.fontSize} minTickGap={40} tickLine={false} />
         <YAxis stroke={AXIS.stroke} fontSize={AXIS.fontSize} tickLine={false} axisLine={false} domain={["auto", "auto"]} width={56} />
-        <Tooltip content={<ChartTooltip />} labelFormatter={fmtDate} />
+        <Tooltip content={<ChartTooltip />} labelFormatter={(label) => fmtDate(String(label))} />
         {type === "area" ? (
           <Area type="monotone" dataKey="price" name="Price" stroke="var(--color-accent)" strokeWidth={2} fill="url(#priceFill)" isAnimationActive={false} dot={false} />
         ) : (

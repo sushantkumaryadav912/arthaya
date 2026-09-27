@@ -1,4 +1,5 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+@source "../../src";
 
 /*
   Arthaya — centralized theme token system (Tailwind v4).
@@ -42,6 +43,18 @@
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+}
+
+/*
+  Font stacks. Google Fonts (next/font) is intentionally not used so the app
+  builds and runs fully offline. Swap these for self-hosted Geist via
+  next/font/local if desired — the tokens above will pick it up automatically.
+*/
+:root {
+  --font-geist-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  --font-geist-mono: ui-monospace, "SFMono-Regular", "Menlo", "Consolas",
+    "Liberation Mono", monospace;
 }
 
 /* Light theme override (dark-first; light is secondary) */

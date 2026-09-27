@@ -1,6 +1,6 @@
 "use client";
 
-import type { TooltipProps } from "recharts";
+import type * as React from "react";
 
 export const AXIS = {
   stroke: "var(--color-fg-subtle)",
@@ -18,8 +18,20 @@ export const SERIES_COLORS = [
   "#a78bfa",
 ];
 
+interface TooltipEntry {
+  color?: string;
+  name?: React.ReactNode;
+  value?: number | string;
+}
+
+interface ChartTooltipProps {
+  active?: boolean;
+  payload?: TooltipEntry[];
+  label?: React.ReactNode;
+}
+
 /** Shared dark tooltip. */
-export function ChartTooltip({ active, payload, label }: TooltipProps<number, string>) {
+export function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border border-border-strong bg-elevated/95 px-3 py-2 text-xs shadow-lg backdrop-blur">
