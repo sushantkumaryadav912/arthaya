@@ -38,11 +38,11 @@ export function Sidebar({
         )}
       >
         <div className="flex h-14 items-center justify-between border-b border-border px-4">
-          <Link href="/dashboard" className="flex items-center gap-2" onClick={onClose}>
-            <span className="flex size-7 items-center justify-center rounded-md bg-accent/15 text-accent">
-              <Activity className="size-4" />
+          <Link href="/dashboard" className="flex items-center gap-2.5" onClick={onClose}>
+            <span className="flex size-7 items-center justify-center rounded-md bg-accent text-bg">
+              <Activity className="size-4" strokeWidth={2.5} />
             </span>
-            <span className="text-sm font-semibold tracking-tight text-fg">
+            <span className="font-display text-[0.95rem] font-medium tracking-tight text-fg">
               Arthaya
             </span>
           </Link>
@@ -55,13 +55,11 @@ export function Sidebar({
           </button>
         </div>
 
-        <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
+        <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-5">
           {NAV_SECTIONS.map((section, i) => (
-            <div key={i} className="space-y-1">
+            <div key={i} className="space-y-0.5">
               {section.title && (
-                <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-fg-subtle">
-                  {section.title}
-                </p>
+                <p className="eyebrow px-3 pb-1.5">{section.title}</p>
               )}
               {section.items.map((item) => {
                 const active = isActive(pathname, item.href);
@@ -72,14 +70,22 @@ export function Sidebar({
                     href={item.href}
                     onClick={onClose}
                     className={cn(
-                      "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                      "group relative flex items-center gap-3 rounded-md py-2 pl-3 pr-3 text-sm transition-colors",
                       active
-                        ? "bg-accent/10 font-medium text-accent"
+                        ? "font-medium text-fg"
                         : "text-fg-muted hover:bg-elevated hover:text-fg",
                     )}
                     aria-current={active ? "page" : undefined}
                   >
-                    <Icon className="size-4 shrink-0" />
+                    {active && (
+                      <span
+                        className="absolute inset-y-1.5 left-0 w-0.5 rounded-full bg-accent"
+                        aria-hidden
+                      />
+                    )}
+                    <Icon
+                      className={cn("size-4 shrink-0", active ? "text-accent" : "")}
+                    />
                     {item.label}
                   </Link>
                 );

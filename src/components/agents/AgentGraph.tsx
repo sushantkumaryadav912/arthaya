@@ -59,7 +59,7 @@ export function AgentGraph({
                     title={a.description}
                   >
                     <p className="text-xs font-semibold">{a.name}</p>
-                    <p className="mt-0.5 text-[10px] uppercase tracking-wide text-fg-subtle">
+                    <p className="mt-0.5 text-[10px] text-fg-subtle">
                       {st}
                     </p>
                   </div>

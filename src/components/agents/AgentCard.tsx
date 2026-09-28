@@ -25,7 +25,7 @@ export function AgentCard({
       </div>
       <p className="mt-1 flex-1 text-xs leading-snug text-fg-muted">{agent.description}</p>
       {agent.dependsOn.length > 0 && (
-        <p className="mt-2 text-[10px] uppercase tracking-wide text-fg-subtle">
+        <p className="mt-2 text-[10px] text-fg-subtle">
           Depends on: {agent.dependsOn.join(", ")}
         </p>
       )}

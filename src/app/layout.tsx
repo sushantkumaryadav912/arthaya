@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { displaySans, textSans } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,7 +14,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="antialiased" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${displaySans.variable} ${textSans.variable} antialiased`}
+      suppressHydrationWarning
+    >
       <body>{children}</body>
     </html>
   );

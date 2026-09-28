@@ -103,7 +103,7 @@ export default async function MarketsPage() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-md border border-border bg-surface px-2.5 py-2">
-      <p className="text-[10px] uppercase tracking-wide text-fg-subtle">{label}</p>
+      <p className="text-[10px] text-fg-subtle">{label}</p>
       <p className="text-xs font-medium text-fg">{value}</p>
     </div>
   );

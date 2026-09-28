@@ -54,7 +54,7 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
         <Menu className="size-4" />
       </button>
 
-      <h1 className="hidden text-sm font-semibold text-fg sm:block">{titleFor(pathname)}</h1>
+      <h1 className="hidden font-display text-sm font-medium text-fg sm:block">{titleFor(pathname)}</h1>
 
       <div className="flex flex-1 items-center justify-end gap-2">
         <StockSearch className="hidden w-full max-w-xs md:block" />

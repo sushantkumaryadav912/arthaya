@@ -1,10 +1,27 @@
 import * as React from "react";
 import { cn } from "@/lib/utils/cn";
 
-export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+type CardVariant = "panel" | "instrument" | "flat";
+
+/**
+ * Surfaces are differentiated by role:
+ *  - panel       primary content surface (default)
+ *  - instrument  primary panel wearing the calibration-scale top edge
+ *  - flat        borderless well, separated from the ground by inset color
+ */
+export function Card({
+  className,
+  variant = "panel",
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & { variant?: CardVariant }) {
   return (
     <div
-      className={cn("rounded-xl border border-border bg-panel", className)}
+      className={cn(
+        variant === "instrument" && "instrument",
+        variant === "panel" && "rounded-lg border border-border bg-panel",
+        variant === "flat" && "rounded-md bg-elevated/60",
+        className,
+      )}
       {...props}
     />
   );
@@ -15,7 +32,7 @@ export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDiv
 }
 
 export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={cn("text-sm font-semibold text-fg", className)} {...props} />;
+  return <h3 className={cn("font-display text-sm font-medium text-fg", className)} {...props} />;
 }
 
 export function CardDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {

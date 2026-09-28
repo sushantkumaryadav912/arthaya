@@ -48,12 +48,12 @@ export default async function DashboardPage() {
       <section>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
           {indices.map((idx) => (
-            <div key={idx.id} className="rounded-xl border border-border bg-panel p-4">
+            <div key={idx.id} className="rounded-lg border border-border bg-panel p-4">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-medium text-fg-muted">{idx.name}</p>
                 <Badge tone="neutral">{idx.region}</Badge>
               </div>
-              <p className="mt-2 tabular text-lg font-semibold text-fg">{formatNumber(idx.value, 2)}</p>
+              <p className="mt-2 tabular text-xl font-medium text-fg">{formatNumber(idx.value, 2)}</p>
               <ValueDelta change={idx.change} changePercent={idx.changePercent} />
               <div className="mt-2">
                 <Sparkline
@@ -92,7 +92,7 @@ export default async function DashboardPage() {
         {/* AI Market Intelligence */}
         <div>
           <SectionHeading title="AI Market Intelligence" />
-          <Card>
+          <Card variant="instrument">
             <CardHeader className="flex-row items-center justify-between">
               <CardTitle>Regime read</CardTitle>
               <ProvenanceTag kind="ai-interpretation" />
@@ -107,7 +107,7 @@ export default async function DashboardPage() {
               <ul className="space-y-1.5 border-t border-border pt-3">
                 {intel.observations.map((o, i) => (
                   <li key={i} className="flex gap-2 text-xs text-fg-muted">
-                    <span className="mt-1 size-1 shrink-0 rounded-full bg-accent" />
+                    <span className="mt-1.5 size-1 shrink-0 rounded-full bg-accent" />
                     {o}
                   </li>
                 ))}
@@ -177,7 +177,7 @@ export default async function DashboardPage() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-md border border-border bg-surface px-2.5 py-2">
-      <p className="text-[10px] uppercase tracking-wide text-fg-subtle">{label}</p>
+      <p className="text-[10px] text-fg-subtle">{label}</p>
       <p className="text-xs font-medium text-fg">{value}</p>
     </div>
   );

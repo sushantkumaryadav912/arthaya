@@ -13,8 +13,8 @@ const LABELS: Record<Provenance, string> = {
 
 const TONE: Record<Provenance, string> = {
   "market-data": "text-fg-muted border-border-strong",
-  calculated: "text-cyan border-cyan/30",
-  "ml-prediction": "text-accent border-accent/30",
+  calculated: "text-fg-muted border-border-strong",
+  "ml-prediction": "text-fg-muted border-border-strong",
   "ai-interpretation": "text-warning border-warning/30",
   backtest: "text-fg-muted border-border-strong",
   demo: "text-warning border-warning/30",
@@ -31,11 +31,15 @@ export function ProvenanceTag({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide",
+        "inline-flex items-center gap-1.5 rounded-sm border px-1.5 py-0.5 text-[10px] font-medium",
         TONE[kind],
         className,
       )}
     >
+      <span
+        className="size-1 shrink-0 rounded-full bg-current opacity-70"
+        aria-hidden
+      />
       {LABELS[kind]}
     </span>
   );
@@ -46,7 +50,7 @@ export function DemoBadge({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-md border border-warning/30 bg-warning-soft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-warning",
+        "inline-flex items-center gap-1.5 rounded-md border border-warning/30 bg-warning-soft px-2 py-0.5 text-[10px] font-medium text-warning",
         className,
       )}
       title="This application is running in demo mode with illustrative mock data."

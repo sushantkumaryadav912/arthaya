@@ -14,10 +14,10 @@ export function PageIntro({
   className?: string;
 }) {
   return (
-    <div className={cn("flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between", className)}>
-      <div className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-fg">{title}</h1>
-        {description && <p className="max-w-2xl text-sm text-fg-muted">{description}</p>}
+    <div className={cn("flex flex-col gap-3 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between", className)}>
+      <div className="space-y-1.5">
+        <h1 className="font-display text-[1.75rem] font-normal leading-none text-fg">{title}</h1>
+        {description && <p className="max-w-2xl text-sm leading-relaxed text-fg-muted">{description}</p>}
         {disclaimer && (
           <p className="max-w-2xl text-xs text-fg-subtle">{disclaimer}</p>
         )}
@@ -40,9 +40,12 @@ export function SectionHeading({
 }) {
   return (
     <div className={cn("mb-3 flex items-end justify-between gap-3", className)}>
-      <div>
-        <h2 className="text-sm font-semibold text-fg">{title}</h2>
-        {description && <p className="text-xs text-fg-muted">{description}</p>}
+      <div className="flex items-baseline gap-2.5">
+        <span className="h-3.5 w-px shrink-0 self-center bg-accent" aria-hidden />
+        <div>
+          <h2 className="font-display text-base font-medium text-fg">{title}</h2>
+          {description && <p className="text-xs text-fg-muted">{description}</p>}
+        </div>
       </div>
       {right}
     </div>

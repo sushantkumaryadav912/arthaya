@@ -30,7 +30,7 @@ export function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTa
   return (
     <th
       className={cn(
-        "h-9 px-3 text-left align-middle text-xs font-medium uppercase tracking-wide text-fg-subtle",
+        "h-9 px-3 text-left align-middle text-xs font-medium text-fg-subtle",
         className,
       )}
       {...props}
