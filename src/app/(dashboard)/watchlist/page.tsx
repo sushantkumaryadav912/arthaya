@@ -23,7 +23,6 @@ export default function WatchlistPage() {
   React.useEffect(() => {
     if (!hydrated) return;
     let active = true;
-    setLoading(true);
     getWatchlist(tickers).then((data) => {
       if (active) {
         setRows(data);

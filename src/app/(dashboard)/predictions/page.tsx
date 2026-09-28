@@ -22,7 +22,6 @@ export default function PredictionsPage() {
 
   React.useEffect(() => {
     let active = true;
-    setLoading(true);
     getAllPredictions(days).then((data) => {
       if (active) {
         setRows(data);
