@@ -45,7 +45,7 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
   const { toggle: togglePalette } = useCommandPalette();
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-bg/80 px-4 backdrop-blur">
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-bg/80 px-4 backdrop-blur">
       <button
         onClick={onMenu}
         className="flex size-9 items-center justify-center rounded-md text-fg-muted hover:bg-elevated hover:text-fg lg:hidden"

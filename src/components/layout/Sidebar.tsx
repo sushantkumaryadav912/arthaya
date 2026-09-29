@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Activity, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Activity, LogOut, X } from "lucide-react";
 import { NAV_SECTIONS } from "@/lib/constants/nav";
 import { cn } from "@/lib/utils/cn";
 import { DemoBadge } from "@/components/common/ProvenanceTag";
+import { authService } from "@/services/authService";
 
 function isActive(pathname: string, href: string) {
   if (href === "/dashboard") return pathname === "/dashboard";
@@ -20,6 +21,17 @@ export function Sidebar({
   onClose: () => void;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await authService.signOut();
+    } catch {
+      // safe fallback
+    }
+    onClose();
+    router.push("/login");
+  };
 
   return (
     <>
@@ -33,11 +45,11 @@ export function Sidebar({
       )}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-border bg-surface transition-transform lg:static lg:z-auto lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-40 flex h-full w-64 shrink-0 flex-col border-r border-border bg-surface transition-transform duration-200 lg:static lg:z-auto lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex h-14 items-center justify-between border-b border-border px-4">
+        <div className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
           <Link href="/dashboard" className="flex items-center gap-2.5" onClick={onClose}>
             <span className="flex size-7 items-center justify-center rounded-md bg-accent text-bg">
               <Activity className="size-4" strokeWidth={2.5} />
@@ -94,15 +106,26 @@ export function Sidebar({
           ))}
         </nav>
 
-        <div className="space-y-3 border-t border-border p-4">
+        {/* Footer: Demo badge, Logout just above profile, and User profile card */}
+        <div className="shrink-0 space-y-3 border-t border-border px-4 pt-3.5 pb-8">
           <DemoBadge />
-          <div className="flex items-center gap-2">
-            <span className="flex size-8 items-center justify-center rounded-full bg-elevated text-xs font-semibold text-fg">
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="group flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-fg-muted transition-colors hover:bg-elevated hover:text-negative"
+          >
+            <LogOut className="size-4 shrink-0 transition-colors group-hover:text-negative" />
+            <span>Log out</span>
+          </button>
+
+          <div className="flex items-center gap-2.5 rounded-lg border border-border/60 bg-elevated/40 p-2.5">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-elevated text-xs font-semibold text-fg">
               AR
             </span>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-medium text-fg">Analyst (demo)</p>
-              <p className="truncate text-[10px] text-fg-subtle">Not signed in</p>
+              <p className="truncate text-[10px] text-fg-subtle">Active session</p>
             </div>
           </div>
         </div>
