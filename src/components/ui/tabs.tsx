@@ -43,7 +43,7 @@ export function TabsList({ className, ...props }: React.HTMLAttributes<HTMLDivEl
     <div
       role="tablist"
       className={cn(
-        "inline-flex h-9 items-center gap-1 overflow-x-auto rounded-lg border border-border bg-surface p-1",
+        "inline-flex h-10 items-center gap-1 overflow-x-auto rounded-xl border border-border/80 bg-surface/90 p-1 backdrop-blur-md shadow-inner",
         className,
       )}
       {...props}
@@ -68,8 +68,10 @@ export function TabsTrigger({
       aria-selected={active}
       onClick={() => ctx.setValue(value)}
       className={cn(
-        "whitespace-nowrap rounded-md px-3 py-1 text-xs font-medium transition-colors",
-        active ? "bg-accent text-bg" : "text-fg-muted hover:text-fg",
+        "whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 active:scale-95",
+        active
+          ? "bg-accent text-bg shadow-[0_0_14px_rgba(16,185,129,0.3)] font-bold"
+          : "text-fg-muted hover:bg-elevated/60 hover:text-fg",
         className,
       )}
     >
@@ -89,5 +91,6 @@ export function TabsContent({
 }) {
   const ctx = React.useContext(TabsContext)!;
   if (ctx.value !== value) return null;
-  return <div className={cn("mt-4", className)}>{children}</div>;
+  return <div className={cn("mt-4 animate-in fade-in-50 duration-200", className)}>{children}</div>;
 }
+

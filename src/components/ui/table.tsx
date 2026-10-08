@@ -3,14 +3,14 @@ import { cn } from "@/lib/utils/cn";
 
 export function Table({ className, ...props }: React.HTMLAttributes<HTMLTableElement>) {
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full overflow-x-auto rounded-lg border border-border/70 bg-surface/40">
       <table className={cn("w-full caption-bottom text-sm", className)} {...props} />
     </div>
   );
 }
 
 export function TableHeader({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) {
-  return <thead className={cn("[&_tr]:border-b [&_tr]:border-border", className)} {...props} />;
+  return <thead className={cn("bg-surface/80 [&_tr]:border-b [&_tr]:border-border/80", className)} {...props} />;
 }
 
 export function TableBody({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) {
@@ -20,7 +20,7 @@ export function TableBody({ className, ...props }: React.HTMLAttributes<HTMLTabl
 export function TableRow({ className, ...props }: React.HTMLAttributes<HTMLTableRowElement>) {
   return (
     <tr
-      className={cn("border-b border-border transition-colors hover:bg-elevated/50", className)}
+      className={cn("border-b border-border/60 transition-colors duration-150 hover:bg-elevated/70 group", className)}
       {...props}
     />
   );
@@ -30,7 +30,7 @@ export function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTa
   return (
     <th
       className={cn(
-        "h-9 px-3 text-left align-middle text-xs font-medium text-fg-subtle",
+        "h-10 px-3.5 text-left align-middle text-[11px] font-semibold tracking-wider text-fg-subtle uppercase",
         className,
       )}
       {...props}
@@ -39,5 +39,6 @@ export function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTa
 }
 
 export function TableCell({ className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement>) {
-  return <td className={cn("px-3 py-2.5 align-middle", className)} {...props} />;
+  return <td className={cn("px-3.5 py-3 align-middle text-xs transition-colors group-hover:text-fg", className)} {...props} />;
 }
+

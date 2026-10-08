@@ -5,7 +5,7 @@ export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInp
   return (
     <input
       className={cn(
-        "flex h-9 w-full rounded-md border border-border-strong bg-surface px-3 py-1 text-sm text-fg placeholder:text-fg-subtle focus-visible:border-accent focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-9.5 w-full rounded-lg border border-border-strong/80 bg-surface/90 px-3.5 py-2 text-sm text-fg placeholder:text-fg-subtle transition-all duration-200 focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/20 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 shadow-inner",
         className,
       )}
       {...props}
@@ -16,7 +16,7 @@ export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInp
 export function Label({ className, ...props }: React.LabelHTMLAttributes<HTMLLabelElement>) {
   return (
     <label
-      className={cn("text-xs font-medium text-fg-muted", className)}
+      className={cn("text-xs font-semibold text-fg-muted tracking-tight", className)}
       {...props}
     />
   );
@@ -26,10 +26,11 @@ export function Select({ className, ...props }: React.SelectHTMLAttributes<HTMLS
   return (
     <select
       className={cn(
-        "h-9 rounded-md border border-border-strong bg-surface px-3 text-sm text-fg focus-visible:border-accent focus-visible:outline-none",
+        "h-9.5 rounded-lg border border-border-strong/80 bg-surface/90 px-3.5 text-sm text-fg transition-all duration-200 focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/20 focus-visible:outline-none shadow-inner cursor-pointer",
         className,
       )}
       {...props}
     />
   );
 }
+

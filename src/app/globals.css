@@ -2,58 +2,47 @@
 @source "../../src";
 
 /*
-  Arthaya — "Instrument" theme (Tailwind v4).
-
-  Design language: a precision measurement instrument for multi-agent equity
-  research, not a glowing trading terminal. Warm graphite ground (a faint
-  blue-green undertone, never neutral #000), a single warm SIGNAL accent (amber)
-  reserved for brand + interaction, and market direction expressed only through
-  a distinct green/red so the accent never competes with price direction.
-
-  Surfaces are differentiated by ROLE, not stamped from one card style:
-    - bg        page ground
-    - surface   rail / chrome (sidebar, topbar)
-    - panel     primary "instrument" panels
-    - elevated  insets, hover, nested data wells
-  Semantic tokens only — never hard-code colors in components.
+  Arthaya — High-Performance Multi-Agent Financial Intelligence Platform
+  Brand Theme aligned with Arthaya Emerald Logo (#10b981 / #059669 / #34d399).
 */
 
 @theme {
-  /* Surfaces — warm graphite, faint teal undertone, 4 elevations */
-  --color-bg: #0b0f10;
-  --color-surface: #10161a;
-  --color-panel: #141b1f;
-  --color-elevated: #1b242a;
+  /* Dark surfaces — sleek, modern graphite with subtle emerald undertone */
+  --color-bg: #070b0e;
+  --color-surface: #0d1317;
+  --color-panel: #111a20;
+  --color-elevated: #16222b;
 
-  /* Borders — warm, low-contrast hairlines */
-  --color-border: #232e33;
-  --color-border-strong: #33424a;
+  /* Borders — precision hairlines */
+  --color-border: #1e2c36;
+  --color-border-strong: #2a3c4a;
 
-  /* Text — warm off-white, not clinical blue-white */
-  --color-fg: #edeae2;
-  --color-fg-muted: #97a1a1;
-  --color-fg-subtle: #616d6e;
+  /* Text — crisp high contrast readability */
+  --color-fg: #f1f5f9;
+  --color-fg-muted: #94a3b8;
+  --color-fg-subtle: #58697a;
 
-  /* Accent — SIGNAL amber (calibration / warmth). Reserved for brand + action. */
-  --color-accent: #f5b544;
-  --color-accent-strong: #e09a1f;
-  --color-accent-soft: #2a2113;
-  --color-cyan: #f5b544; /* legacy alias → amber, so old refs stay on-brand */
+  /* Accent — ARTHAYA EMERALD (#10b981 / #34d399) matching official logo */
+  --color-accent: #10b981;
+  --color-accent-strong: #059669;
+  --color-accent-soft: rgba(16, 185, 129, 0.12);
+  --color-accent-glow: rgba(16, 185, 129, 0.25);
+  --color-cyan: #34d399;
 
-  /* Semantic states — market direction kept perceptually distinct from accent */
-  --color-positive: #4bbf8a;
-  --color-positive-soft: #16302a;
-  --color-negative: #e06a5a;
-  --color-negative-soft: #351f1e;
-  --color-warning: #d9a441;
-  --color-warning-soft: #2f2718;
-  --color-neutral: #6b7778;
+  /* Semantic states — financial direction kept crisp & distinct */
+  --color-positive: #10b981;
+  --color-positive-soft: rgba(16, 185, 129, 0.15);
+  --color-negative: #f43f5e;
+  --color-negative-soft: rgba(244, 63, 94, 0.15);
+  --color-warning: #f59e0b;
+  --color-warning-soft: rgba(245, 158, 11, 0.15);
+  --color-neutral: #64748b;
 
-  /* Radii — differentiated by role: crisp data surfaces, soft only for instruments */
-  --radius-sm: 0.1875rem;
-  --radius-md: 0.3125rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
+  /* Radii */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
 
   --font-sans: var(--font-text);
   --font-display: var(--font-display);
@@ -61,26 +50,25 @@
 }
 
 :root {
-  /* next/font sets --font-display and --font-text on <html>. Fallbacks here. */
   --font-instrument-mono: "SFMono-Regular", "Menlo", "Consolas",
     "Liberation Mono", ui-monospace, monospace;
 }
 
-/* Light theme (dark-first; light is the secondary mode) */
+/* Light theme support */
 html.light {
-  --color-bg: #f4f2ec;
-  --color-surface: #fbfaf6;
-  --color-panel: #ffffff;
-  --color-elevated: #f1efe8;
-  --color-border: #e0ddd2;
-  --color-border-strong: #cbc7b8;
-  --color-fg: #1a1c19;
-  --color-fg-muted: #56605c;
-  --color-fg-subtle: #8a938e;
-  --color-accent-soft: #f7ecd4;
-  --color-positive-soft: #dcefe4;
-  --color-negative-soft: #f6e0dc;
-  --color-warning-soft: #f6ecd4;
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-panel: #f1f5f9;
+  --color-elevated: #e2e8f0;
+  --color-border: #cbd5e1;
+  --color-border-strong: #94a3b8;
+  --color-fg: #0f172a;
+  --color-fg-muted: #475569;
+  --color-fg-subtle: #64748b;
+  --color-accent-soft: rgba(16, 185, 129, 0.15);
+  --color-positive-soft: rgba(16, 185, 129, 0.15);
+  --color-negative-soft: rgba(244, 63, 94, 0.15);
+  --color-warning-soft: rgba(245, 158, 11, 0.15);
 }
 
 * {
@@ -102,31 +90,32 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Display face for headings / hero numerics — set via .font-display utility */
+/* Display face for headings */
 .font-display {
   font-family: var(--font-display), var(--font-text), system-ui, sans-serif;
   letter-spacing: -0.02em;
 }
 
-/* True numeric / technical data uses the instrument mono */
+/* Tabular numbers for financial data */
 .tabular {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
 
-/*
-  Instrument panel — the primary content surface. A hairline "calibration"
-  scale sits flush at the top edge, the way a gauge face carries its ticks.
-  This is the differentiating structural device; use it on primary panels,
-  not on every card.
-*/
+/* Instrument panel styling with subtle calibration line */
 .instrument {
   position: relative;
   background: var(--color-panel);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+.instrument:hover {
+  border-color: var(--color-border-strong);
+}
+
 .instrument::before {
   content: "";
   position: absolute;
@@ -137,26 +126,45 @@ body {
   border-top-right-radius: var(--radius-lg);
   background-image: repeating-linear-gradient(
     to right,
-    var(--color-border-strong) 0,
-    var(--color-border-strong) 1px,
-    transparent 1px,
-    transparent 7px
+    var(--color-accent) 0,
+    var(--color-accent) 2px,
+    transparent 2px,
+    transparent 8px
   );
-  opacity: 0.7;
+  opacity: 0.4;
   pointer-events: none;
 }
 
-/* Eyebrow labels: NOT all-caps. Small, warm, letter-spaced-normal. */
+/* Glassmorphism utility */
+.glass-panel {
+  background: rgba(17, 26, 32, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* Subtle glow utility */
+.hover-glow {
+  transition: all 0.25s ease;
+}
+.hover-glow:hover {
+  box-shadow: 0 0 20px -3px rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+/* Eyebrow labels */
 .eyebrow {
   color: var(--color-fg-subtle);
   font-size: 0.6875rem;
   font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
-/* Subtle scrollbars */
+/* Smooth custom scrollbars */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -164,15 +172,14 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--color-border-strong);
   border-radius: 9999px;
-  border: 2px solid var(--color-bg);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-fg-subtle);
+  background: var(--color-accent);
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--color-accent) 28%, transparent);
-  color: var(--color-fg);
+  background: rgba(16, 185, 129, 0.3);
+  color: #ffffff;
 }
 
 :focus-visible {
@@ -182,20 +189,19 @@ body {
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.9); }
 }
 .animate-pulse-dot {
-  animation: pulse-dot 1.4s ease-in-out infinite;
+  animation: pulse-dot 1.5s ease-in-out infinite;
 }
 
-/* One orchestrated motion moment: the live analysis "sweep" as agents run. */
 @keyframes sweep {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
 .animate-sweep {
-  animation: sweep 1.6s ease-in-out infinite;
+  animation: sweep 1.8s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -204,3 +210,4 @@ body {
     animation: none;
   }
 }
+
