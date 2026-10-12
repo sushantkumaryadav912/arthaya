@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -19,6 +20,17 @@ interface Cmd {
 
 export function CommandPalette() {
   const { open, setOpen } = useCommandPalette();
+
+  if (!open) return null;
+
+  return <CommandPaletteDialog setOpen={setOpen} />;
+}
+
+function CommandPaletteDialog({
+  setOpen,
+}: {
+  setOpen: (open: boolean) => void;
+}) {
   const router = useRouter();
   const [q, setQ] = React.useState("");
   const [stocks, setStocks] = React.useState<StockSummary[]>([]);
@@ -26,22 +38,28 @@ export function CommandPalette() {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
-    if (open) {
-      setQ("");
-      setActive(0);
-      setTimeout(() => inputRef.current?.focus(), 0);
-    }
-  }, [open]);
+    const timeout = window.setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
+  }, []);
 
   React.useEffect(() => {
     let alive = true;
-    searchStocks(q).then((r) => alive && setStocks(r.slice(0, 6)));
+
+    searchStocks(q).then((results) => {
+      if (alive) setStocks(results.slice(0, 6));
+    });
+
     return () => {
       alive = false;
     };
   }, [q]);
 
-  const navCmds: Cmd[] = NAV_SECTIONS.flatMap((s) => s.items).map((item) => ({
+  const navCmds: Cmd[] = NAV_SECTIONS.flatMap((section) =>
+    section.items,
+  ).map((item) => ({
     id: `nav:${item.href}`,
     label: item.label,
     sub: "Go to page",
@@ -52,37 +70,38 @@ export function CommandPalette() {
     },
   }));
 
-  const stockCmds: Cmd[] = stocks.map((s) => ({
-    id: `stock:${s.ticker}`,
-    label: `${s.ticker} — ${s.name}`,
+  const stockCmds: Cmd[] = stocks.map((stock) => ({
+    id: `stock:${stock.ticker}`,
+    label: `${stock.ticker} - ${stock.name}`,
     sub: "Open stock",
     icon: <TrendingUp className="size-4" />,
     run: () => {
       setOpen(false);
-      router.push(`/stocks/${s.ticker}`);
+      router.push(`/stocks/${stock.ticker}`);
     },
   }));
 
-  const ql = q.trim().toLowerCase();
-  const filteredNav = ql
-    ? navCmds.filter((c) => c.label.toLowerCase().includes(ql))
+  const queryLower = q.trim().toLowerCase();
+  const filteredNav = queryLower
+    ? navCmds.filter((command) =>
+        command.label.toLowerCase().includes(queryLower),
+      )
     : navCmds;
+
   const all = [...stockCmds, ...filteredNav];
 
-  React.useEffect(() => setActive(0), [q]);
-
-  if (!open) return null;
-
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setActive((a) => Math.min(a + 1, all.length - 1));
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setActive((a) => Math.max(a - 1, 0));
-    } else if (e.key === "Enter") {
-      e.preventDefault();
+  const onKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setActive((current) => Math.min(current + 1, all.length - 1));
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActive((current) => Math.max(current - 1, 0));
+    } else if (event.key === "Enter") {
+      event.preventDefault();
       all[active]?.run();
+    } else if (event.key === "Escape") {
+      setOpen(false);
     }
   };
 
@@ -93,40 +112,53 @@ export function CommandPalette() {
     >
       <div
         className="w-full max-w-lg overflow-hidden rounded-xl border border-border-strong bg-elevated shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center gap-2 border-b border-border px-4">
           <Search className="size-4 text-fg-subtle" />
           <input
             ref={inputRef}
             value={q}
-            onChange={(e) => setQ(e.target.value)}
+            onChange={(event) => {
+              setQ(event.target.value);
+              setActive(0);
+            }}
             onKeyDown={onKeyDown}
-            placeholder="Search stocks or jump to a page…"
+            placeholder="Search stocks or jump to a page..."
             className="h-12 w-full bg-transparent text-sm text-fg placeholder:text-fg-subtle focus:outline-none"
           />
           <kbd className="hidden rounded border border-border-strong px-1.5 py-0.5 text-[10px] text-fg-subtle sm:block">
             ESC
           </kbd>
         </div>
+
         <div className="max-h-80 overflow-y-auto p-2">
           {all.length === 0 && (
-            <p className="px-3 py-6 text-center text-sm text-fg-subtle">No results.</p>
+            <p className="px-3 py-6 text-center text-sm text-fg-subtle">
+              No results.
+            </p>
           )}
-          {all.map((c, i) => (
+
+          {all.map((command, index) => (
             <button
-              key={c.id}
-              onMouseEnter={() => setActive(i)}
-              onClick={c.run}
+              key={command.id}
+              onMouseEnter={() => setActive(index)}
+              onClick={command.run}
               className={cn(
                 "flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm",
-                i === active ? "bg-panel text-fg" : "text-fg-muted hover:bg-panel/60",
+                index === active
+                  ? "bg-panel text-fg"
+                  : "text-fg-muted hover:bg-panel/60",
               )}
             >
-              <span className="text-fg-subtle">{c.icon}</span>
-              <span className="flex-1 truncate">{c.label}</span>
-              <span className="text-[10px] text-fg-subtle">{c.sub}</span>
-              {i === active && <CornerDownLeft className="size-3 text-fg-subtle" />}
+              <span className="text-fg-subtle">{command.icon}</span>
+              <span className="flex-1 truncate">{command.label}</span>
+              <span className="text-[10px] text-fg-subtle">
+                {command.sub}
+              </span>
+              {index === active && (
+                <CornerDownLeft className="size-3 text-fg-subtle" />
+              )}
             </button>
           ))}
         </div>
