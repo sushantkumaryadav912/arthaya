@@ -1,0 +1,150 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ArthayaAnalysisOutputSchema",
+  "description": "Output schema produced by the Arthaya multi-agent equity analysis platform.",
+  "type": "object",
+  "required": [
+    "analysisId",
+    "ticker",
+    "horizon",
+    "depth",
+    "status",
+    "agents",
+    "events",
+    "prediction",
+    "critic",
+    "summary",
+    "createdAt",
+    "completedAt"
+  ],
+  "properties": {
+    "analysisId": { "type": "string" },
+    "ticker": { "type": "string" },
+    "horizon": { "type": "string", "enum": ["1D", "5D", "20D"] },
+    "horizonDays": { "type": "integer" },
+    "depth": { "type": "string", "enum": ["quick", "standard", "deep"] },
+    "status": { "type": "string", "enum": ["completed", "failed"] },
+    "modelGateway": { "type": "string" },
+    "coordinationTrace": {
+      "type": "object",
+      "properties": {
+        "conflictDetected": { "type": "boolean" },
+        "replanningIterations": { "type": "integer" },
+        "arbitrationSummary": { "type": "string" }
+      }
+    },
+    "prediction": {
+      "type": "object",
+      "required": ["direction", "probability", "confidence", "breakdown"],
+      "properties": {
+        "direction": { "type": "string", "enum": ["UP", "DOWN", "NEUTRAL"] },
+        "probability": { "type": "number", "minimum": 0, "maximum": 1 },
+        "confidence": { "type": "string", "enum": ["Low", "Moderate", "Medium-High", "High"] },
+        "breakdown": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "model": { "type": "string" },
+              "direction": { "type": "string" },
+              "probability": { "type": "number" },
+              "weight": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "critic": {
+      "type": "object",
+      "required": ["dataQuality", "modelQuality", "signalAgreement", "potentialLeakage", "notes"],
+      "properties": {
+        "dataQuality": { "type": "number" },
+        "modelQuality": { "type": "number" },
+        "signalAgreement": { "type": "number" },
+        "potentialLeakage": { "type": "string" },
+        "notes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["overallSignal", "probability", "technicalView", "fundamentalView", "newsView", "riskFactors"],
+      "properties": {
+        "overallSignal": { "type": "string" },
+        "probability": { "type": "number" },
+        "technicalView": { "type": "string" },
+        "fundamentalView": { "type": "string" },
+        "newsView": { "type": "string" },
+        "riskFactors": { "type": "array", "items": { "type": "string" } },
+        "conflictingSignals": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "sampleOutput": {
+    "analysisId": "an_AAPL_5D_1728800000000",
+    "ticker": "AAPL",
+    "horizon": "5D",
+    "horizonDays": 5,
+    "depth": "deep",
+    "status": "completed",
+    "modelGateway": "claude",
+    "coordinationTrace": {
+      "conflictDetected": true,
+      "replanningIterations": 1,
+      "arbitrationSummary": "Critic detected technical vs news divergence; Orchestrator triggered adaptive ensemble recalibration."
+    },
+    "prediction": {
+      "direction": "UP",
+      "probability": 0.58,
+      "confidence": "Moderate",
+      "breakdown": [
+        { "model": "Logistic Regression", "direction": "UP", "probability": 0.56, "weight": 0.3 },
+        { "model": "Random Forest", "direction": "UP", "probability": 0.61, "weight": 0.4 },
+        { "model": "XGBoost", "direction": "NEUTRAL", "probability": 0.52, "weight": 0.3 }
+      ]
+    },
+    "critic": {
+      "dataQuality": 0.94,
+      "modelQuality": 0.82,
+      "sourceQuality": 0.88,
+      "signalAgreement": 0.62,
+      "modelCalibration": 0.86,
+      "potentialLeakage": "none",
+      "missingData": [],
+      "staleData": [],
+      "notes": [
+        "Initial technical and news signals conflicted; resolved via Orchestrator re-plan loop.",
+        "Downside volatility buffer applied to final calibrated probability."
+      ]
+    },
+    "summary": {
+      "overallSignal": "UP",
+      "probability": 0.58,
+      "horizonDays": 5,
+      "confidence": "Moderate",
+      "marketContext": "Broader regime for Technology indicates ATR of $3.85 with NASDAQ liquidity intact.",
+      "technicalView": "RSI at 62.4 with MACD histogram positive; momentum leaned constructive.",
+      "fundamentalView": "Sector valuation multiple at 28.5x P/E with 8.4% revenue trajectory.",
+      "newsView": "Regulatory/catalyst sentiment scored cautious (-0.52), necessitating risk adjustment.",
+      "historicalContext": "Analog engine confirmed 6 matching historical regime windows.",
+      "modelPrediction": "Calibrated multi-agent ensemble probability: 58% for UP over 5 trading days.",
+      "riskFactors": [
+        "Cross-agent divergence between price momentum and news sentiment creates heightened tail risk.",
+        "Event risk: macroeconomic liquidity prints scheduled within forecast window."
+      ],
+      "conflictingSignals": [
+        "Technical Agent indicated POSITIVE momentum while News Agent detected NEGATIVE headwind.",
+        "Arbitrated via Orchestrator re-plan: probability recalibrated downwards."
+      ],
+      "dataQuality": "Real-time simulated data stream with zero historical leakage and calibrated provenance.",
+      "agreement": {
+        "technical": "positive",
+        "fundamental": "positive",
+        "news": "negative",
+        "historical": "mixed",
+        "mlModel": "positive"
+      }
+    },
+    "createdAt": "2026-10-13T10:15:00.000Z",
+    "completedAt": "2026-10-13T10:15:04.200Z"
+  }
+}

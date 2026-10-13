@@ -1,0 +1,145 @@
+{
+  "traceMetadata": {
+    "system": "Arthaya Multi-Agent Stock Intelligence Platform",
+    "timestamp": "2026-10-13T10:30:15.820Z",
+    "symbol": "AAPL",
+    "horizon": "5D",
+    "depth": "deep",
+    "modelGateway": "claude",
+    "conflictDetected": true,
+    "replanningIterations": 1,
+    "totalAgentFrames": 11,
+    "orchestrationPattern": "Orchestrator-Worker with Adversarial Critic Loop & Dynamic Replanning"
+  },
+  "executionTrace": [
+    {
+      "step": 1,
+      "clock": "00:00",
+      "agent": "orchestrator",
+      "phase": "planning",
+      "toolName": "PlanDecomposer & DAGScheduler",
+      "message": "Initialized adaptive multi-agent DAG for AAPL (5D, deep depth, LLM: claude).",
+      "payloadSummary": "Allocated tasks to 8 specialized sub-agents with adversarial verification threshold = 0.65.",
+      "status": "completed"
+    },
+    {
+      "step": 2,
+      "clock": "00:02",
+      "agent": "market",
+      "phase": "tool_execution",
+      "toolName": "YFinanceDataIngestion & VolatilityEngine",
+      "targetAgent": "technical",
+      "message": "Ingested NASDAQ order book & tick history for AAPL (Current: $228.00).",
+      "payloadSummary": "Base price $228.00, ATR $3.85, Implied Volatility 24.2%. Handing off time series to Technical Agent.",
+      "status": "completed"
+    },
+    {
+      "step": 3,
+      "clock": "00:04",
+      "agent": "technical",
+      "phase": "reasoning",
+      "toolName": "QuantitativeIndicatorSuite (RSI/MACD/EMA)",
+      "targetAgent": "prediction",
+      "message": "Computed momentum suite: RSI(14)=64.8, MACD Histogram=1.24. Leaning BULLISH.",
+      "payloadSummary": "Hypothesis: Price is breaking out above 50-day EMA. Conviction: 0.81.",
+      "status": "completed"
+    },
+    {
+      "step": 4,
+      "clock": "00:06",
+      "agent": "fundamental",
+      "phase": "reasoning",
+      "toolName": "FinancialStatementAnalyzer & MultipleValuer",
+      "targetAgent": "prediction",
+      "message": "Evaluated SEC filings & Q-on-Q metrics for Technology sector. P/E=28.4x, Revenue Growth=9.2%.",
+      "payloadSummary": "Valuation posture: Fairly valued with robust operating margins.",
+      "status": "completed"
+    },
+    {
+      "step": 5,
+      "clock": "00:08",
+      "agent": "news",
+      "phase": "tool_execution",
+      "toolName": "SentimentNLP & RegulatoryNewswireScraper",
+      "targetAgent": "critic",
+      "message": "Scored real-time catalyst streams: Sentiment index=-0.58 (CAUTIOUS / NEGATIVE HEADWIND).",
+      "payloadSummary": "Identified regulatory / macro news friction regarding antitrust review. Transmitting sentiment vectors to Critic & Prediction agents.",
+      "status": "completed"
+    },
+    {
+      "step": 6,
+      "clock": "00:10",
+      "agent": "historical",
+      "phase": "reasoning",
+      "toolName": "MacroRegimeAnalogEngine",
+      "targetAgent": "prediction",
+      "message": "Scanned 10-year historical database: Isolated 7 historical market analogs.",
+      "payloadSummary": "Analog success rate: 57% forward continuation within 5 trading sessions.",
+      "status": "completed"
+    },
+    {
+      "step": 7,
+      "clock": "00:12",
+      "agent": "prediction",
+      "phase": "tool_execution",
+      "toolName": "MLCalibratedEnsemble (LR + RF + XGBoost)",
+      "targetAgent": "critic",
+      "message": "Generated preliminary model pass: Direction=UP, Calibrated Probability=72%.",
+      "payloadSummary": "Aggregated feature vectors across Technical, Fundamental, and Historical streams. Submitted to Critic for audit.",
+      "status": "completed"
+    },
+    {
+      "step": 8,
+      "clock": "00:14",
+      "agent": "critic",
+      "phase": "critique",
+      "toolName": "AdversarialAuditor & SignalConsistencyChecker",
+      "targetAgent": "orchestrator",
+      "message": "CONFLICT DETECTED: Technical Agent leans positive (RSI=64.8) but News Agent shows bearish regulatory headwind (-0.58).",
+      "payloadSummary": "Divergence score=0.74 (Threshold 0.65). Demanding arbitration and dynamic replanning before final synthesis!",
+      "isConflict": true,
+      "status": "completed"
+    },
+    {
+      "step": 9,
+      "clock": "00:16",
+      "agent": "orchestrator",
+      "phase": "replanning",
+      "toolName": "ArbitrationCoordinator & PolicyGovernor",
+      "targetAgent": "prediction",
+      "message": "Arbitration initiated: Instructing Prediction Agent to re-weight downside tail risk and apply confidence haircut.",
+      "payloadSummary": "Re-plan directive: Technical weighting reduced by 20%, News risk factor elevated by 35%. Recalculating ensemble.",
+      "isReplan": true,
+      "status": "completed"
+    },
+    {
+      "step": 10,
+      "clock": "00:18",
+      "agent": "prediction",
+      "phase": "replanning",
+      "toolName": "AdaptiveSensitivityRecalibrator",
+      "targetAgent": "critic",
+      "message": "Replanning complete: Recalibrated ensemble with expanded uncertainty buffer. New probability: 58% (UP).",
+      "payloadSummary": "Risk-weighted reconciliation achieved. Adversarial Critic audit criteria satisfied.",
+      "isReplan": true,
+      "status": "completed"
+    },
+    {
+      "step": 11,
+      "clock": "00:20",
+      "agent": "synthesis",
+      "phase": "synthesis",
+      "toolName": "LLMSynthesisDossier (CLAUDE)",
+      "message": "Synthesized final research dossier with full provenance across all 8 upstream agent contributions.",
+      "payloadSummary": "Overall consensus: UP (58% probability) over 5 trading days. Reconciled divergence between technical breakout and regulatory friction.",
+      "status": "completed"
+    }
+  ],
+  "coordinationAudit": {
+    "conflictDetected": true,
+    "conflictRationale": "Technical trend leaned strongly bullish (+0.81 conviction) while real-time regulatory NLP score was negative (-0.58).",
+    "arbitrationOutcome": "Orchestrator commanded dynamic re-plan; Prediction Agent calibrated probability from 72% down to 58%, expanding uncertainty bounds.",
+    "zeroLeakageVerified": true,
+    "criticSignoffScore": 0.94
+  }
+}
