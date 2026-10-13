@@ -17,6 +17,7 @@ interface StartArgs {
   ticker: string;
   horizon: AnalysisHorizon;
   depth: AnalysisDepth;
+  gateway?: string;
 }
 
 function initialAgents(): AgentStatus[] {
@@ -29,8 +30,8 @@ function initialAgents(): AgentStatus[] {
 
 /**
  * Drives the live analysis via the SSE route handler
- * (`GET /api/v1/analysis/stream`). Works end-to-end in demo mode: the
- * handler emits real agent events from the mock pipeline.
+ * (`GET /api/v1/analysis/stream`). Supports live agentic coordination,
+ * conflict arbitration, and LLM model gateway routing.
  */
 export function useAnalysisStream() {
   const [phase, setPhase] = React.useState<StreamPhase>("idle");
@@ -55,7 +56,7 @@ export function useAnalysisStream() {
   }, [stop]);
 
   const start = React.useCallback(
-    ({ ticker, horizon, depth }: StartArgs) => {
+    ({ ticker, horizon, depth, gateway }: StartArgs) => {
       stop();
       setPhase("running");
       setEvents([]);
@@ -65,7 +66,7 @@ export function useAnalysisStream() {
 
       const url = `${API_BASE}${API_PREFIX}/analysis/stream?ticker=${encodeURIComponent(
         ticker,
-      )}&horizon=${horizon}&depth=${depth}`;
+      )}&horizon=${horizon}&depth=${depth}&gateway=${encodeURIComponent(gateway ?? "claude")}`;
       const es = new EventSource(url);
       esRef.current = es;
 

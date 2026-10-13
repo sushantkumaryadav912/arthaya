@@ -11,7 +11,7 @@ export type AnalysisRunStatus =
   | "completed"
   | "failed";
 
-/** Streamed event (SSE-ready) — mirrors project.md §15 event shape. */
+/** Streamed event (SSE-ready) — mirrors project.md §15 event shape with multi-agent coordination metadata. */
 export interface AnalysisEvent {
   analysisId: string;
   agent: AgentId;
@@ -21,6 +21,12 @@ export interface AnalysisEvent {
   timestamp: string;
   /** elapsed clock label e.g. "00:03" */
   clock?: string;
+  phase?: "planning" | "perception" | "reasoning" | "tool_execution" | "critique" | "replanning" | "synthesis";
+  toolName?: string;
+  targetAgent?: AgentId;
+  payloadSummary?: string;
+  isConflict?: boolean;
+  isReplan?: boolean;
 }
 
 export interface SignalAgreement {
@@ -74,4 +80,10 @@ export interface AnalysisRun {
   summary?: AIResearchSummary;
   createdAt: string;
   completedAt?: string;
+  modelGateway?: string;
+  coordinationTrace?: {
+    conflictDetected: boolean;
+    replanningIterations: number;
+    arbitrationSummary: string;
+  };
 }

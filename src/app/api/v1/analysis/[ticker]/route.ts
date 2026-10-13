@@ -1,8 +1,8 @@
 
 import type { NextRequest } from "next/server";
-import { buildCompletedRun } from "@/lib/mock/analysis";
+import { buildMultiAgentExecutionPlan } from "@/lib/agents/multiAgentCoordinator";
 import { validateAnalysisInput } from "@/lib/utils/analysisValidation";
-import { badRequest, notFound, ok } from "@/app/api/v1/_lib/respond";
+import { badRequest, ok } from "@/app/api/v1/_lib/respond";
 
 export async function GET(
   req: NextRequest,
@@ -22,7 +22,8 @@ export async function GET(
   }
 
   const { ticker, horizon, depth } = validation.value;
-  const data = buildCompletedRun(ticker, horizon, depth);
+  const gateway = searchParams.get("gateway") ?? "claude";
+  const plan = buildMultiAgentExecutionPlan(ticker, horizon, depth, gateway);
 
-  return data ? ok(data) : notFound(`Unknown ticker "${ticker}"`);
+  return ok(plan.finalRun);
 }
