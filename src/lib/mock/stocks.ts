@@ -31,8 +31,38 @@ export const UNIVERSE: Seed[] = [
   { ticker: "HDFCBANK", name: "HDFC Bank Ltd.", exchange: "NSE", currency: "INR", base: 1685, sector: "Banking" },
 ];
 
-export function findSeed(ticker: string): Seed | undefined {
-  return UNIVERSE.find((s) => s.ticker === ticker.toUpperCase());
+export function findSeed(ticker: string): Seed {
+  const normalized = ticker.trim().toUpperCase();
+  const existing = UNIVERSE.find((s) => s.ticker === normalized);
+  if (existing) return existing;
+
+  // Universal dynamic seed generator for custom/unlisted tickers
+  const rand = mulberry32(seedFrom(normalized + "_seed"));
+  const isIndian =
+    normalized.endsWith(".NS") ||
+    normalized.endsWith(".BO") ||
+    ["TCS", "INFY", "WIPRO", "ITC", "SBIN", "BHARTIARTL", "KOTAKBANK"].includes(normalized);
+
+  const basePrice = isIndian ? round(500 + rand() * 3500, 2) : round(25 + rand() * 480, 2);
+  const sectors = [
+    "Technology",
+    "Semiconductors",
+    "Consumer Discretionary",
+    "Financial Services",
+    "Healthcare",
+    "Energy",
+    "Industrial Goods",
+  ];
+  const sector = sectors[Math.floor(rand() * sectors.length)];
+
+  return {
+    ticker: normalized,
+    name: `${normalized} Corp.`,
+    exchange: isIndian ? "NSE" : "NASDAQ",
+    currency: isIndian ? "INR" : "USD",
+    base: basePrice,
+    sector,
+  };
 }
 
 export function searchUniverse(q: string): Seed[] {
