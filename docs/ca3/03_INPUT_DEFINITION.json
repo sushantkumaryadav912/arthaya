@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ArthayaAnalysisInputSchema",
+  "description": "Input specification for initiating an autonomous multi-agent equity analysis run.",
+  "type": "object",
+  "required": ["ticker"],
+  "properties": {
+    "ticker": {
+      "type": "string",
+      "description": "Stock symbol or identifier across supported exchanges (e.g., NASDAQ, NYSE, NSE).",
+      "pattern": "^[A-Z0-9.\\-^=]{1,15}$",
+      "examples": ["AAPL", "NVDA", "TSLA", "RELIANCE", "TCS"]
+    },
+    "horizon": {
+      "type": "string",
+      "description": "Target predictive forecast window for the quantitative model ensemble.",
+      "enum": ["1D", "5D", "20D"],
+      "default": "5D"
+    },
+    "depth": {
+      "type": "string",
+      "description": "Analytical depth and adversarial audit passes allocated to the multi-agent graph.",
+      "enum": ["quick", "standard", "deep"],
+      "default": "standard"
+    },
+    "gateway": {
+      "type": "string",
+      "description": "Target LLM provider backbone for synthesis and reasoning persona.",
+      "enum": ["claude", "gemini", "mistral", "groq", "openrouter"],
+      "default": "claude"
+    }
+  },
+  "sampleInput": {
+    "ticker": "AAPL",
+    "horizon": "5D",
+    "depth": "deep",
+    "gateway": "claude"
+  }
+}
