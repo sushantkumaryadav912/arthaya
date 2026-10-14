@@ -1,267 +1,159 @@
-# Arthaya
+<div align="center">
 
-Arthaya is a stock-market analysis dashboard built with Next.js, React, TypeScript, and Tailwind CSS. It lets users run structured analyses on a demo stock universe across multiple time horizons and analysis depths, and explore related views such as market information, predictions, model performance, reports, agents, data sources, comparisons, and watchlists.
+# 📈 Arthaya
 
-> **Demo notice:** Arthaya currently runs on a demo stock universe with mock and generated data. Prices, analyses, predictions, and model-performance metrics are **illustrative only**. They are not live market data, not the output of a trained machine-learning model, and not independently validated research.
+**A stock-market analysis dashboard with streaming multi-agent analysis.**
 
----
+![Next.js](https://img.shields.io/badge/Next.js-16.3.6-000000?logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-19.2.8-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
+![Data](https://img.shields.io/badge/data-demo%20%2F%20simulated-orange)
 
-## Table of Contents
+[Live Demo](https://arthaya.vercel.app) · [Features](#-features) · [Quick Start](#-quick-start) · [API](#-api)
 
-1. [Key Features](#key-features)
-2. [Screenshots](#screenshots)
-3. [Technology Stack](#technology-stack)
-4. [Architecture and Project Structure](#architecture-and-project-structure)
-5. [Application Workflow](#application-workflow)
-6. [Analysis Parameters](#analysis-parameters)
-7. [API Reference](#api-reference)
-8. [Installation and Local Setup](#installation-and-local-setup)
-9. [Environment Variables](#environment-variables)
-10. [Available Scripts](#available-scripts)
-11. [Data Sources and Limitations](#data-sources-and-limitations)
-12. [Deployment](#deployment)
-13. [Known Limitations and Future Improvements](#known-limitations-and-future-improvements)
-14. [Contributing](#contributing)
-15. [License and Disclaimer](#license-and-disclaimer)
+</div>
+
+> ⚠️ **Demo project.** Arthaya uses a demo stock universe with mock and generated data. Prices, predictions, analyses, and model metrics are **illustrative only**, not live market data, not trained-model output, and not financial advice.
 
 ---
 
-## Key Features
+## ✨ Features
 
-| Feature | Description | Data type |
+| | Feature | What it does |
 |---|---|---|
-| Stock analysis | Runs an analysis for a demo ticker with a selectable horizon and depth. | Mock / generated |
-| Streaming analysis | A Server-Sent Events (SSE) endpoint emits agent progress events and then a final completed analysis. | Mock / generated |
-| Input validation | Requests are validated; invalid input and unknown demo tickers return error responses. | Implemented logic |
-| Model performance | Displays generated model-performance metrics. | Simulated |
-| Dashboard views | Pages for market information, predictions, reports, agents, data sources, comparisons, and watchlists. | Demo <!-- CONFIRM each page exists and what it shows --> |
+| 🔍 | **Stock analysis** | Analyze a demo ticker by horizon and depth |
+| 📡 | **Live-style streaming** | SSE endpoint streams agent progress, then the final analysis |
+| ✅ | **Validation** | Zod-validated inputs; invalid requests and unknown tickers return errors |
+| 📊 | **Model performance** | Generated (simulated) metrics with charts |
+| 🗂️ | **Dashboard views** | Market info, predictions, reports, agents, data sources, comparisons, watchlists |
 
-**Demo stock universe:** AAPL, MSFT, NVDA, TSLA, AMZN, GOOGL, RELIANCE, TCS, INFY, HDFCBANK.
+**Analysis options**
 
----
-
-## Screenshots
-
-No screenshots are included in the repository yet.
-
-<!--
-Add real images, then replace this section, e.g.:
-![Dashboard](public/screenshots/dashboard.png)
--->
+| Parameter | Values |
+|---|---|
+| Horizon | `1D` · `5D` · `20D` |
+| Depth | `quick` · `standard` · `deep` |
+| Tickers | `AAPL` `MSFT` `NVDA` `TSLA` `AMZN` `GOOGL` `RELIANCE` `TCS` `INFY` `HDFCBANK` |
 
 ---
 
-## Technology Stack
+## 🖼️ Screenshots
 
-| Technology | Version | Purpose in Arthaya |
-|---|---|---|
-| [Next.js](https://nextjs.org/) | 16.3.6 | Application framework, routing, and API route handlers |
-| [React](https://react.dev/) | 19.2.8 | User interface |
-| [TypeScript](https://www.typescriptlang.org/) | 5 | Static typing |
-| [Tailwind CSS](https://tailwindcss.com/) | 4 | Styling |
-| [Recharts](https://recharts.org/) | see `package.json` | Charts and data visualization |
-| [Zod](https://zod.dev/) | see `package.json` | Schema validation of inputs |
-| [React Hook Form](https://react-hook-form.com/) + `@hookform/resolvers` | see `package.json` | Form handling and validation integration |
-| [Framer Motion](https://www.framer.com/motion/) | see `package.json` | Animations |
-| [Lucide React](https://lucide.dev/) | see `package.json` | Icons |
+<!-- Add real images, e.g. ![Dashboard](public/screenshots/dashboard.png) -->
+*Screenshots coming soon.*
 
 ---
 
-## Architecture and Project Structure
+## 🧰 Tech Stack
 
-Arthaya is a single Next.js application. The browser-based dashboard calls Next.js route handlers, which validate input and return mock or generated analysis data. No external market-data service is documented here.
+| Layer | Tools |
+|---|---|
+| Framework | Next.js 16, React 19, TypeScript 5 |
+| Styling & motion | Tailwind CSS 4, Framer Motion |
+| Charts & icons | Recharts, Lucide React |
+| Forms & validation | React Hook Form, `@hookform/resolvers`, Zod |
+
+---
+
+## 🏗️ Architecture
 
 ```mermaid
 flowchart LR
-    U[Dashboard UI<br/>React + Tailwind] -->|HTTP request| R[Next.js route handlers]
-    U -->|SSE stream| S[Analysis stream endpoint]
-    R --> V[Zod validation<br/>ticker / horizon / depth]
-    S --> V
-    V --> M[Mock data and<br/>generated analysis]
-    M --> R
-    M --> S
-    R -->|JSON| U
-    S -->|agent progress events,<br/>final analysis| U
+    UI[Dashboard UI] -->|HTTP| API[Route handlers]
+    UI -->|SSE| STREAM[Analysis stream]
+    API --> ZOD[Zod validation]
+    STREAM --> ZOD
+    ZOD --> MOCK[Mock data and generators]
+    MOCK --> UI
 ```
-
-Typical Next.js layout (replace with your actual tree before publishing):
 
 ```text
 arthaya/
-├── app/              # Pages and API route handlers   <!-- CONFIRM -->
-│   └── api/          # Route handlers (analysis, stream, stocks, ...)
-├── components/       # Reusable UI components         <!-- CONFIRM -->
-├── lib/              # Validation, mock data, utilities <!-- CONFIRM -->
-├── public/           # Static assets
-├── package.json
-└── tsconfig.json
+├── src/       # App pages, components, API routes, utilities
+├── tests/     # Unit and integration tests
+├── docs/      # Project documentation
+├── public/    # Static assets
+└── package.json
 ```
+<!-- CONFIRM: inner structure of src/ -->
 
-| Area | Responsibility |
+---
+
+## 🔌 API
+
+Route handlers live under `src/app/api` <!-- CONFIRM path -->.
+
+| Group | Purpose |
 |---|---|
-| Pages / UI | Dashboard views and reusable components |
-| Route handlers | Receive requests, validate input, return JSON or SSE |
-| Validation | Zod schemas for ticker, horizon, and depth |
-| Mock-data modules | Demo stock universe, analysis content, and model-performance metrics |
+| Analysis | Validate input and return a demo analysis |
+| Analysis stream | SSE: agent progress events → final analysis |
+| Stocks · Market | Demo stock and market data |
+| Watchlist · Reports · Predictions | Demo dashboard data |
+| Agents · Data sources · Model performance | Metadata and simulated metrics |
+
+<!-- CONFIRM: add exact methods, paths, parameters, and status codes from route.ts files -->
 
 ---
 
-## Application Workflow
+## 🚀 Quick Start
 
-1. Open the dashboard in a browser.
-2. Choose a ticker from the demo universe.
-3. Select an analysis horizon and depth.
-4. The input is validated. Invalid input or an unknown demo ticker returns an error response.
-5. Analysis is returned either as a single result or streamed over SSE, where agent progress events arrive first, followed by the final completed analysis.
-6. Other views (watchlist, reports, predictions, model performance, comparisons, agents, data sources) present demo content. <!-- CONFIRM details of each -->
-
----
-
-## Analysis Parameters
-
-| Parameter | Allowed values |
-|---|---|
-| Horizon | `1D`, `5D`, `20D` |
-| Depth | `quick`, `standard`, `deep` |
-| Ticker | Demo universe only (see [Key Features](#key-features)) |
-
-Defaults for these parameters: <!-- CONFIRM from the source code -->
-
----
-
-## API Reference
-
-Arthaya exposes Next.js route handlers. Exact paths, methods, parameters, and status codes must be confirmed from the `route.ts` files. Rows marked CONFIRM are not yet verified.
-
-| Method | Endpoint | Purpose | Parameters | Success | Errors |
-|---|---|---|---|---|---|
-| CONFIRM | CONFIRM (analysis) | Run a stock analysis | ticker, horizon, depth | JSON analysis | Error for invalid input and unknown demo ticker (status codes CONFIRM) |
-| CONFIRM | CONFIRM (analysis stream) | Stream analysis progress | ticker, horizon, depth (CONFIRM) | `text/event-stream`: agent progress events, then final analysis | CONFIRM |
-| CONFIRM | CONFIRM (stocks) | Demo stock data | CONFIRM | CONFIRM | CONFIRM |
-| CONFIRM | CONFIRM (watchlist) | Watchlist data | CONFIRM | CONFIRM | CONFIRM |
-| CONFIRM | CONFIRM (predictions) | Prediction data | CONFIRM | CONFIRM | CONFIRM |
-| CONFIRM | CONFIRM (reports) | Report data | CONFIRM | CONFIRM | CONFIRM |
-| CONFIRM | CONFIRM (agents) | Agent information | CONFIRM | CONFIRM | CONFIRM |
-| CONFIRM | CONFIRM (market) | Market information | CONFIRM | CONFIRM | CONFIRM |
-| CONFIRM | CONFIRM (model performance) | Generated metrics | CONFIRM | CONFIRM | CONFIRM |
-| CONFIRM | CONFIRM (data sources) | Data source listing | CONFIRM | CONFIRM | CONFIRM |
-
-### SSE behavior
-
-The analysis stream emits agent progress events followed by a final completed analysis. Event names and payload shapes: <!-- CONFIRM from the stream route -->
-
----
-
-## Installation and Local Setup
-
-### Prerequisites
-
-- Node.js compatible with Next.js 16 <!-- CONFIRM exact minimum version -->
-- npm (or the package manager matching your lockfile)
-- Git
-
-### Steps (Windows PowerShell)
+**Requirements:** Node.js (version compatible with Next.js 16) and npm.
 
 ```powershell
-# 1. Clone the repository
 git clone <REPOSITORY_URL>
-
-# 2. Enter the project directory
 cd arthaya
-
-# 3. Install dependencies
 npm install
-
-# 4. Start the development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser (default Next.js port).
+Open **http://localhost:3000**. No environment variables are documented <!-- CONFIRM: search code for process.env -->.
 
----
+### Scripts
 
-## Environment Variables
-
-No environment variables are documented for this project. <!-- CONFIRM: search the code for process.env and any .env.example before keeping this line -->
-
-Never commit secrets or private configuration values.
-
----
-
-## Available Scripts
-
-| Script | Command | Purpose |
-|---|---|---|
-| `dev` | `npm run dev` | Start the development server |
-| `build` | `npm run build` | Create a production build |
-| `start` | `npm run start` | Serve the production build |
-| `lint` | `npm run lint` | Run linting |
-
-<!-- CONFIRM these four scripts against package.json and remove any that do not exist. Add a test script only if tests exist. -->
-
----
-
-## Data Sources and Limitations
-
-| Data | Origin |
+| Command | Purpose |
 |---|---|
-| Stock universe and prices | Local demo / mock data |
-| Analysis content | Mock / generated |
-| Predictions | Illustrative |
-| Model-performance metrics | Generated; not from a trained or validated model |
-| External market-data APIs | None documented <!-- CONFIRM --> |
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm run start` | Serve production build |
+| `npm run lint` | Run ESLint |
 
-- Do not treat any output as live or real market data.
-- Metrics shown do not demonstrate predictive accuracy or investment performance.
-- Illustrative analysis is not a guarantee of future returns and is not personalized financial advice.
+<!-- CONFIRM against package.json; add the test command, since a tests/ folder exists -->
 
 ---
 
-## Deployment
+## ☁️ Deployment
 
-Arthaya is a standard Next.js application. It has not been deployed publicly, and no live URL is claimed.
+Deployed on Vercel: **[arthaya.vercel.app](https://arthaya.vercel.app)** <!-- CONFIRM -->
+
+To self-host: `npm run build` then `npm run start`.
+
+---
+
+## ⚠️ Limitations
+
+- Demo stock universe only, with mock and generated data
+- Model metrics are simulated and do not demonstrate predictive accuracy
+- No external market-data integration documented
+
+**Future ideas (not implemented):** real market-data provider, persistent watchlists and reports, authentication.
+
+---
+
+## 🤝 Contributing
 
 ```powershell
+git checkout -b feature/your-change
+npm run lint
 npm run build
-npm run start
 ```
 
-Any platform that supports Next.js (for example Vercel, or a Node.js host) can run it. No deployment-specific configuration is documented. <!-- CONFIRM none exists -->
+Then push your branch and open a pull request.
 
 ---
 
-## Known Limitations and Future Improvements
+## 📄 License & Disclaimer
 
-**Current limitations**
+**License:** not yet specified. Add a `LICENSE` file before allowing reuse.
 
-- Uses a fixed demo stock universe with mock and generated data.
-- Model-performance metrics are simulated.
-- Analysis supports only the horizons and depths listed above.
-
-**Possible future improvements (not implemented)**
-
-- Integrate a real market-data provider.
-- Add persistence for watchlists and reports.
-- Add authentication.
-- Add automated tests.
-
----
-
-## Contributing
-
-1. Fork or clone the repository.
-2. Create a branch:
-```powershell
-   git checkout -b feature/your-change
-```
-3. Make your changes.
-4. Run the available checks (for example `npm run lint` and `npm run build`).
-5. Commit and push your branch, then open a pull request describing your changes.
-
----
-
-## License and Disclaimer
-
-**License:** No license has been verified for this repository. Add a `LICENSE` file before allowing reuse or redistribution. <!-- CONFIRM -->
-
-**Disclaimer:** Arthaya is an educational and demonstration project. All data, analyses, predictions, and metrics are simulated or illustrative. Nothing here constitutes financial, investment, or trading advice, and it should not be used to make financial decisions.
+Arthaya is for educational and demonstration purposes. Nothing here is financial, investment, or trading advice.
