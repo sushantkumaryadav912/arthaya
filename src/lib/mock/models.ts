@@ -33,7 +33,7 @@ export function buildModelReport(): ModelPerformanceReport {
   });
 
   const quarters = ["2024 Q1", "2024 Q2", "2024 Q3", "2024 Q4", "2025 Q1"];
-  const walkForward: WalkForwardPeriod[] = quarters.map((period, i) => ({
+  const walkForward: WalkForwardPeriod[] = quarters.map((period) => ({
     period,
     trainWindow: `rolling 24m → ${period}`,
     testWindow: period,

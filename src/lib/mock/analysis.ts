@@ -34,7 +34,7 @@ function clock(sec: number): string {
 }
 
 /** Ordered event list for the live timeline / SSE stream. */
-export function buildEvents(analysisId: string, ticker: string): AnalysisEvent[] {
+export function buildEvents(analysisId: string, _ticker: string): AnalysisEvent[] {
   return AGENT_ORDER.map((agent, i) => ({
     analysisId,
     agent,
