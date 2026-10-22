@@ -117,19 +117,6 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
           <SearchIcon className="size-4 text-accent" />
         </button>
 
-        <button
-          onClick={togglePalette}
-          className="hidden h-9 items-center gap-2 rounded-lg border border-border-strong/80 bg-surface px-3 text-xs text-fg-subtle hover:border-accent/40 hover:text-fg lg:flex transition-all hover:shadow-[0_0_12px_rgba(16,185,129,0.1)]"
-          aria-label="Search ticker"
-        >
-          <SearchIcon className="size-3.5 text-accent" />
-          <span className="text-[11px] font-medium">Search Ticker...</span>
-          <div className="flex items-center gap-0.5 ml-2 font-mono text-[10px] text-fg-subtle border border-border px-1.5 py-0.5 rounded bg-elevated">
-            <kbd>⌘</kbd>
-            <kbd>K</kbd>
-          </div>
-        </button>
-
         <div className="hidden items-center gap-2 rounded-lg border border-positive/30 bg-positive/10 px-2.5 py-1 sm:flex shadow-[0_0_10px_rgba(16,185,129,0.12)]">
           <span className="size-2 rounded-full bg-positive animate-pulse-dot" />
           <span className="text-[11px] font-semibold text-positive flex items-center gap-1">

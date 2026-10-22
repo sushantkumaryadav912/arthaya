@@ -76,6 +76,10 @@ export function StockSearch({ className }: { className?: string }) {
           className="w-full bg-transparent text-sm text-fg placeholder:text-fg-subtle focus:outline-none"
           aria-label="Search stocks"
         />
+        <div className="hidden sm:flex items-center gap-0.5 font-mono text-[10px] text-fg-subtle border border-border px-1.5 py-0.5 rounded bg-elevated pointer-events-none shrink-0">
+          <kbd>⌘</kbd>
+          <kbd>K</kbd>
+        </div>
       </div>
       {open && results.length > 0 && (
         <div className="absolute left-0 right-0 top-11 z-50 max-h-80 overflow-y-auto rounded-lg border border-border-strong bg-elevated p-1 shadow-xl">

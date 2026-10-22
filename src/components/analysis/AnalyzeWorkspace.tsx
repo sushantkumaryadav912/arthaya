@@ -187,33 +187,33 @@ export function AnalyzeWorkspace() {
       {/* Dynamic Multi-Agent Arbitration Callout Banner */}
       {run?.coordinationTrace && (
         <div
-          className={`flex flex-wrap items-center justify-between gap-4 rounded-xl border p-4 shadow-sm ${
+          className={`flex flex-wrap items-center justify-between gap-4 rounded-xl border p-4 shadow-sm transition-all ${
             run.coordinationTrace.conflictDetected
-              ? "border-amber-500/30 bg-amber-500/10 text-amber-200"
-              : "border-positive/30 bg-positive/10 text-emerald-200"
+              ? "border-amber-500/40 bg-amber-500/10 text-amber-950 dark:text-amber-200"
+              : "border-positive/40 bg-positive/10 text-emerald-950 dark:text-emerald-200"
           }`}
         >
           <div className="flex items-start gap-3">
             {run.coordinationTrace.conflictDetected ? (
-              <AlertTriangle className="size-5 shrink-0 text-amber-400 mt-0.5" />
+              <AlertTriangle className="size-5 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
             ) : (
               <CheckCircle2 className="size-5 shrink-0 text-positive mt-0.5" />
             )}
             <div>
               <div className="flex items-center gap-2">
-                <h4 className="text-sm font-bold tracking-tight">
+                <h4 className="text-sm font-bold tracking-tight text-amber-950 dark:text-amber-100">
                   {run.coordinationTrace.conflictDetected
                     ? "Multi-Agent Conflict Arbitrated & Re-Planned"
                     : "Multi-Agent Consensus Formed"}
                 </h4>
                 {run.coordinationTrace.conflictDetected && (
-                  <span className="flex items-center gap-1 rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-semibold text-amber-300 border border-amber-500/30">
+                  <span className="flex items-center gap-1 rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-semibold text-amber-900 dark:text-amber-300 border border-amber-500/30">
                     <RefreshCw className="size-3" />
                     {run.coordinationTrace.replanningIterations} Re-plan Cycle
                   </span>
                 )}
               </div>
-              <p className="mt-0.5 text-xs opacity-90 leading-relaxed">
+              <p className="mt-1 text-xs font-medium text-amber-900/90 dark:text-amber-200/90 leading-relaxed">
                 {run.coordinationTrace.arbitrationSummary}
               </p>
             </div>
@@ -223,7 +223,7 @@ export function AnalyzeWorkspace() {
             <button
               type="button"
               onClick={handleExportFullReport}
-              className="flex items-center gap-1.5 rounded-lg border border-white/20 bg-surface/80 px-3 py-1.5 text-xs font-semibold text-fg shadow-sm transition-all hover:bg-elevated hover:border-accent"
+              className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-fg shadow-sm transition-all hover:bg-elevated hover:border-accent"
             >
               <Download className="size-3.5 text-accent" />
               <span>Export Dossier (JSON)</span>

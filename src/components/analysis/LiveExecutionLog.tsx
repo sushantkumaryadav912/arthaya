@@ -124,15 +124,15 @@ export function LiveExecutionLog({
 
       {/* Terminal View */}
       <div
-        className="h-72 overflow-y-auto rounded-lg border border-border bg-[#05080b] p-3 font-mono text-xs shadow-inner"
+        className="h-72 overflow-y-auto rounded-lg border border-border bg-[#0a1015] p-3 font-mono text-xs shadow-inner"
         role="log"
         aria-live="polite"
       >
         {filteredEvents.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center text-fg-subtle">
-            <Layers className="size-6 mb-2 opacity-40 text-accent" />
-            <p>Ready to trace inter-agent communication & conflict arbitration…</p>
-            <p className="text-[11px] text-fg-subtle/80">Configure ticker and click Run Analysis to observe real-time agent handoffs.</p>
+          <div className="flex h-full flex-col items-center justify-center text-slate-400">
+            <Layers className="size-6 mb-2 opacity-50 text-accent" />
+            <p className="text-slate-200">Ready to trace inter-agent communication & conflict arbitration…</p>
+            <p className="text-[11px] text-slate-400">Configure ticker and click Run Analysis to observe real-time agent handoffs.</p>
           </div>
         ) : (
           <div className="space-y-1.5">
@@ -145,19 +145,19 @@ export function LiveExecutionLog({
                   className={cn(
                     "group flex flex-col gap-0.5 rounded p-1.5 transition-colors",
                     e.isConflict
-                      ? "bg-amber-950/30 border border-amber-800/40"
+                      ? "bg-amber-950/40 border border-amber-500/40 text-amber-200"
                       : e.isReplan
-                      ? "bg-rose-950/30 border border-rose-800/40"
-                      : "hover:bg-white/[0.02]",
+                      ? "bg-rose-950/40 border border-rose-500/40 text-rose-200"
+                      : "hover:bg-white/[0.04]",
                   )}
                 >
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="shrink-0 tabular text-fg-subtle">{e.clock ?? "--:--"}</span>
+                    <span className="shrink-0 tabular text-slate-400 font-mono text-[11px]">{e.clock ?? "--:--"}</span>
 
                     {badge && (
                       <span
                         className={cn(
-                          "rounded border px-1 py-0.2 text-[9px] font-bold tracking-wider",
+                          "rounded border px-1.5 py-0.5 text-[9px] font-bold tracking-wider",
                           badge.tone,
                         )}
                       >
@@ -170,36 +170,36 @@ export function LiveExecutionLog({
                     </span>
 
                     {e.targetAgent && (
-                      <span className="flex items-center gap-1 text-[11px] text-cyan-400">
+                      <span className="flex items-center gap-1 text-[11px] text-cyan-400 font-semibold">
                         ➔ <span className="uppercase">{e.targetAgent}</span>
                       </span>
                     )}
 
                     {e.isConflict && (
-                      <span className="flex items-center gap-1 rounded bg-amber-500/20 px-1 py-0.2 text-[10px] font-bold text-amber-300">
+                      <span className="flex items-center gap-1 rounded bg-amber-500/25 px-1.5 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-500/40">
                         ⚡ CRITIC DISAGREEMENT
                       </span>
                     )}
 
                     {e.isReplan && (
-                      <span className="flex items-center gap-1 rounded bg-rose-500/20 px-1 py-0.2 text-[10px] font-bold text-rose-300">
+                      <span className="flex items-center gap-1 rounded bg-rose-500/25 px-1.5 py-0.5 text-[10px] font-bold text-rose-300 border border-rose-500/40">
                         🔄 DYNAMIC RE-PLAN
                       </span>
                     )}
 
                     {e.toolName && (
-                      <span className="text-[10px] text-fg-subtle font-mono">
+                      <span className="text-[10px] text-slate-400 font-mono">
                         [{e.toolName}]
                       </span>
                     )}
                   </div>
 
-                  <p className="text-fg-muted pl-12 text-[11.5px] leading-relaxed">
+                  <p className="text-slate-100 pl-12 text-[11.5px] leading-relaxed">
                     {e.message}
                   </p>
 
                   {e.payloadSummary && (
-                    <p className="text-fg-subtle pl-12 text-[10.5px] italic">
+                    <p className="text-slate-300 pl-12 text-[10.5px] italic font-mono">
                       Payload: {e.payloadSummary}
                     </p>
                   )}
