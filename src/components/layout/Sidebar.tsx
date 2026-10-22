@@ -7,7 +7,8 @@ import { LogOut, X } from "lucide-react";
 import { NAV_SECTIONS } from "@/lib/constants/nav";
 import { cn } from "@/lib/utils/cn";
 import { DemoBadge } from "@/components/common/ProvenanceTag";
-import { authService } from "@/services/authService";
+import * as React from "react";
+import { authService, type AuthUser } from "@/services/authService";
 
 function isActive(pathname: string, href: string) {
   if (href === "/dashboard") return pathname === "/dashboard";
@@ -23,6 +24,13 @@ export function Sidebar({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [currentUser, setCurrentUser] = React.useState<AuthUser | null>(null);
+
+  React.useEffect(() => {
+    authService.getCurrentUser().then((u) => {
+      if (u) setCurrentUser(u);
+    });
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -146,12 +154,27 @@ export function Sidebar({
 
           <div className="flex items-center gap-3 rounded-lg border border-border/70 bg-elevated/50 p-2.5 transition-colors hover:border-border-strong">
             <div className="relative flex size-8 shrink-0 items-center justify-center rounded-full bg-accent/20 border border-accent/40 text-xs font-bold text-accent shadow-sm">
-              AR
+              {currentUser?.name
+                ? currentUser.name
+                    .split(" ")
+                    .map((p) => p[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase()
+                : currentUser?.email
+                ? currentUser.email.slice(0, 2).toUpperCase()
+                : "AR"}
               <span className="absolute bottom-0 right-0 size-2 rounded-full bg-positive ring-2 ring-surface" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-semibold text-fg">Analyst (Demo)</p>
-              <p className="truncate text-[10px] text-fg-subtle">Active Session</p>
+              <p className="truncate text-xs font-semibold text-fg">
+                {currentUser?.name || currentUser?.email || "Quantitative Analyst"}
+              </p>
+              <p className="truncate text-[10px] text-fg-subtle">
+                {currentUser?.organization
+                  ? `${currentUser.organization} • ${currentUser.role || "Analyst"}`
+                  : currentUser?.role || "Active Session"}
+              </p>
             </div>
           </div>
         </div>

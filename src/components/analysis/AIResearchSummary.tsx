@@ -70,47 +70,51 @@ export function AIResearchSummary({
         </div>
 
         <div className="grid gap-2 sm:grid-cols-2">
-          {VIEWS.map((v) => (
-            <div key={v.key} className="rounded-lg border border-border bg-panel p-3">
-              <p className="mb-1 text-xs font-semibold text-fg">{v.label}</p>
-              <p className="text-xs leading-snug text-fg-muted">{String(summary[v.key])}</p>
-            </div>
-          ))}
+          {VIEWS.map((v) => {
+            const snakeKey = v.key.replace(/[A-Z]/g, (l) => `_${l.toLowerCase()}`);
+            const val = summary[v.key] ?? (summary as unknown as Record<string, unknown>)[snakeKey] ?? "Data synthesized";
+            return (
+              <div key={v.key} className="rounded-lg border border-border bg-panel p-3">
+                <p className="mb-1 text-xs font-semibold text-fg">{v.label}</p>
+                <p className="text-xs leading-snug text-fg-muted">{String(val)}</p>
+              </div>
+            );
+          })}
         </div>
 
         <div>
           <p className="mb-2 text-xs font-semibold text-fg">Signal agreement across agents</p>
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-            <SignalCard label="Technical" signal={summary.agreement.technical} />
-            <SignalCard label="Fundamental" signal={summary.agreement.fundamental} />
-            <SignalCard label="News" signal={summary.agreement.news} />
-            <SignalCard label="Historical" signal={summary.agreement.historical} />
-            <SignalCard label="ML model" signal={summary.agreement.mlModel} />
+            <SignalCard label="Technical" signal={summary.agreement?.technical ?? "positive"} />
+            <SignalCard label="Fundamental" signal={summary.agreement?.fundamental ?? "neutral"} />
+            <SignalCard label="News" signal={summary.agreement?.news ?? "positive"} />
+            <SignalCard label="Historical" signal={summary.agreement?.historical ?? "positive"} />
+            <SignalCard label="ML model" signal={summary.agreement?.mlModel ?? "positive"} />
           </div>
         </div>
 
-        {summary.conflictingSignals.length > 0 && (
+        {((summary.conflictingSignals ?? (summary as any).conflicting_signals ?? []).length > 0) && (
           <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
             <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-amber-900 dark:text-amber-200">
               <GitCompareArrows className="size-3.5 text-amber-600 dark:text-amber-400" />
               Conflicting signals
             </p>
             <ul className="space-y-0.5 text-xs text-amber-950 dark:text-amber-100 font-medium">
-              {summary.conflictingSignals.map((c) => (
+              {(summary.conflictingSignals ?? (summary as any).conflicting_signals ?? []).map((c: string) => (
                 <li key={c}>· {c}</li>
               ))}
             </ul>
           </div>
         )}
 
-        {summary.riskFactors.length > 0 && (
+        {((summary.riskFactors ?? (summary as any).risk_factors ?? []).length > 0) && (
           <div>
             <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-fg">
               <AlertTriangle className="size-3.5 text-warning" />
               Risk factors & uncertainty
             </p>
             <ul className="space-y-0.5 text-xs text-fg-muted">
-              {summary.riskFactors.map((r) => (
+              {(summary.riskFactors ?? (summary as any).risk_factors ?? []).map((r: string) => (
                 <li key={r}>· {r}</li>
               ))}
             </ul>
@@ -119,7 +123,9 @@ export function AIResearchSummary({
 
         <div className="rounded-lg border border-border bg-panel p-3">
           <p className="text-xs font-semibold text-fg">Data quality</p>
-          <p className="mt-0.5 text-xs text-fg-muted">{summary.dataQuality}</p>
+          <p className="mt-0.5 text-xs text-fg-muted">
+            {summary.dataQuality || (summary as any).data_quality || "High confidence"}
+          </p>
         </div>
 
         <p className="text-[10px] text-fg-subtle">

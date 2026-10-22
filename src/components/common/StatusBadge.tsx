@@ -35,7 +35,10 @@ const SIGNAL_MAP: Record<
 
 /** Analytical classification badge — icon+text so meaning is not color-only (§29). */
 export function SignalBadge({ signal }: { signal: SignalClass }) {
-  const s = SIGNAL_MAP[signal];
+  const normalizedKey = (
+    typeof signal === "string" ? signal.toLowerCase() : "neutral"
+  ) as SignalClass;
+  const s = SIGNAL_MAP[normalizedKey] || SIGNAL_MAP.neutral;
   return (
     <Badge tone={s.tone}>
       {s.icon}

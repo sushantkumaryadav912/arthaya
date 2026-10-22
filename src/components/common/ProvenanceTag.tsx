@@ -45,8 +45,25 @@ export function ProvenanceTag({
   );
 }
 
-/** Persistent demo-mode marker. */
+import { DEMO_MODE } from "@/lib/utils/env";
+
+/** Persistent demo-mode or live backend marker. */
 export function DemoBadge({ className }: { className?: string }) {
+  if (!DEMO_MODE) {
+    return (
+      <span
+        className={cn(
+          "inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400",
+          className,
+        )}
+        title="Live Backend Mode — Synced with Arthaya Multi-Agent Platform"
+      >
+        <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+        Live Backend
+      </span>
+    );
+  }
+
   return (
     <span
       className={cn(

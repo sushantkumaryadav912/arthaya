@@ -18,6 +18,19 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_BACKEND_URL: backendUrl,
     NEXT_PUBLIC_DEMO_MODE: demoMode,
   },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

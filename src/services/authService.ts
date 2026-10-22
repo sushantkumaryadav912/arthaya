@@ -230,14 +230,23 @@ class JwtAuthProvider implements AuthProvider {
       if (res.ok) {
         const data = await res.json();
         if (data.authenticated && data.user) {
+          const current = await this.getCurrentUser();
+          const merged: AuthUser = {
+            ...(data.user || {}),
+            ...(current || {}),
+            name:
+              current?.name && current.name !== "Arthaya Demo Trader"
+                ? current.name
+                : data.user?.name || current?.name || "Quantitative Analyst",
+            role: current?.role || data.user?.role || "analyst",
+            organization: current?.organization || data.user?.organization,
+            marketFocus: current?.marketFocus || data.user?.marketFocus,
+            horizon: current?.horizon || data.user?.horizon,
+          };
           if (typeof window !== "undefined") {
-            const current = await this.getCurrentUser();
-            localStorage.setItem(
-              USER_KEY,
-              JSON.stringify({ ...(current || {}), ...data.user }),
-            );
+            localStorage.setItem(USER_KEY, JSON.stringify(merged));
           }
-          return { valid: true, authorized: true, user: data.user as AuthUser };
+          return { valid: true, authorized: true, user: merged };
         }
       }
 

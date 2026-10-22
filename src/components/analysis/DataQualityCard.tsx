@@ -39,7 +39,10 @@ const LEAKAGE_TONE: Record<string, string> = {
 
 /** Critic-agent validation panel: an adversarial quality check, not a guarantee. */
 export function DataQualityCard({ critic }: { critic: CriticValidation }) {
-  const flags = [...critic.notes];
+  const flags = Array.isArray(critic.notes) ? [...critic.notes] : [];
+  const missingData = Array.isArray(critic.missingData) ? critic.missingData : [];
+  const staleData = Array.isArray(critic.staleData) ? critic.staleData : [];
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -67,13 +70,13 @@ export function DataQualityCard({ critic }: { critic: CriticValidation }) {
           </span>
         </div>
 
-        {(critic.missingData.length > 0 || critic.staleData.length > 0) && (
+        {(missingData.length > 0 || staleData.length > 0) && (
           <div className="grid gap-2 text-xs sm:grid-cols-2">
             <div>
               <p className="mb-1 font-medium text-fg-muted">Missing data</p>
-              {critic.missingData.length ? (
+              {missingData.length ? (
                 <ul className="space-y-0.5 text-fg-subtle">
-                  {critic.missingData.map((m) => (
+                  {missingData.map((m) => (
                     <li key={m}>· {m}</li>
                   ))}
                 </ul>
@@ -83,9 +86,9 @@ export function DataQualityCard({ critic }: { critic: CriticValidation }) {
             </div>
             <div>
               <p className="mb-1 font-medium text-fg-muted">Stale data</p>
-              {critic.staleData.length ? (
+              {staleData.length ? (
                 <ul className="space-y-0.5 text-fg-subtle">
-                  {critic.staleData.map((m) => (
+                  {staleData.map((m) => (
                     <li key={m}>· {m}</li>
                   ))}
                 </ul>
