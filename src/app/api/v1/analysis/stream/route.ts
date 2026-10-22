@@ -1,101 +1,107 @@
+
 import type { NextRequest } from "next/server";
-import { AGENT_ORDER } from "@/lib/constants/agents";
-import { buildCompletedRun } from "@/lib/mock/analysis";
-import type { AnalysisDepth, AnalysisEvent, AnalysisHorizon } from "@/lib/types";
+import { badRequest } from "@/app/api/v1/_lib/respond";
+import { validateAnalysisInput } from "@/lib/utils/analysisValidation";
+import { buildMultiAgentExecutionPlan } from "@/lib/agents/multiAgentCoordinator";
+import type { AnalysisEvent } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const AGENT_MESSAGE: Record<string, string> = {
-  orchestrator: "Analysis initialized",
-  market: "Market data retrieved",
-  technical: "Technical indicators calculated",
-  fundamental: "Fundamental analysis completed",
-  news: "News sentiment completed",
-  historical: "Historical comparison completed",
-  prediction: "Prediction model completed",
-  critic: "Critic validation completed",
-  synthesis: "Final synthesis completed",
-};
-
-const RUNNING_TASK: Record<string, string> = {
-  orchestrator: "Sequencing agent graph…",
-  market: "Fetching price & volume…",
-  technical: "Computing RSI / MACD / Bollinger…",
-  fundamental: "Parsing statements & ratios…",
-  news: "Scoring news sentiment…",
-  historical: "Matching historical analogs…",
-  prediction: "Running LR / RF / XGBoost ensemble…",
-  critic: "Validating data & model quality…",
-  synthesis: "Composing research summary…",
-};
-
-const DEPTH_DELAY: Record<AnalysisDepth, number> = { quick: 120, standard: 260, deep: 420 };
-
-function clock(sec: number): string {
-  const m = String(Math.floor(sec / 60)).padStart(2, "0");
-  const s = String(sec % 60).padStart(2, "0");
+function formatClock(seconds: number): string {
+  const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const s = String(seconds % 60).padStart(2, "0");
   return `${m}:${s}`;
 }
 
-/** SSE analysis stream: emits per-agent running/completed events, then a completed run. */
+/**
+ * SSE analysis stream: emits authentic multi-agent events including
+ * tool execution, inter-agent handoffs, conflict detection, replanning,
+ * and calibrated synthesis.
+ */
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const ticker = (searchParams.get("ticker") ?? "").toUpperCase();
-  const horizon = (searchParams.get("horizon") ?? "5D") as AnalysisHorizon;
-  const depth = (searchParams.get("depth") ?? "standard") as AnalysisDepth;
+
+  const validation = validateAnalysisInput(
+    searchParams.get("ticker") ?? "",
+    searchParams.get("horizon"),
+    searchParams.get("depth"),
+  );
+
+  if (!validation.ok) {
+    return badRequest(validation.error);
+  }
+
+  const { ticker, horizon, depth } = validation.value;
+  const gateway = searchParams.get("gateway") ?? "claude";
   const analysisId = `an_${ticker}_${horizon}_${Date.now()}`;
 
   const encoder = new TextEncoder();
-  const delay = DEPTH_DELAY[depth] ?? 260;
 
   const stream = new ReadableStream({
     async start(controller) {
       const send = (obj: unknown) =>
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(obj)}\n\n`));
+        controller.enqueue(
+          encoder.encode(`data: ${JSON.stringify(obj)}\n\n`),
+        );
 
-      const run = buildCompletedRun(ticker, horizon, depth, analysisId);
-      if (!run) {
-        send({ type: "error", message: `Unknown ticker "${ticker}" (demo universe).` });
-        controller.close();
-        return;
-      }
+      const plan = buildMultiAgentExecutionPlan(
+        ticker,
+        horizon,
+        depth,
+        gateway,
+        analysisId,
+      );
 
-      const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-      let elapsed = 0;
+      const sleep = (ms: number) =>
+        new Promise<void>((resolve) => setTimeout(resolve, ms));
 
-      for (let i = 0; i < AGENT_ORDER.length; i++) {
-        const agent = AGENT_ORDER[i];
+      let elapsedSeconds = 0;
 
-        // running frame
-        const running: AnalysisEvent = {
+      for (const step of plan.steps) {
+        // Emit running phase event with tool execution metadata
+        const runningEvent: AnalysisEvent = {
           analysisId,
-          agent,
+          agent: step.agent,
           status: "running",
-          message: RUNNING_TASK[agent],
+          message: `[${step.toolName}] ${step.message}`,
           progress: 0.5,
           timestamp: new Date().toISOString(),
-          clock: clock(elapsed),
+          clock: formatClock(elapsedSeconds),
+          phase: step.phase,
+          toolName: step.toolName,
+          targetAgent: step.targetAgent,
+          payloadSummary: step.payloadSummary,
+          isConflict: step.isConflict,
+          isReplan: step.isReplan,
         };
-        send({ type: "event", event: running });
-        await sleep(delay);
-        elapsed += 1;
 
-        // completed frame
-        const completed: AnalysisEvent = {
+        send({ type: "event", event: runningEvent });
+        await sleep(Math.round(step.delayMs * 0.7));
+        elapsedSeconds += 1;
+
+        // Emit completed step event
+        const completedEvent: AnalysisEvent = {
           analysisId,
-          agent,
+          agent: step.agent,
           status: "completed",
-          message: AGENT_MESSAGE[agent],
+          message: step.message,
           progress: 1,
           timestamp: new Date().toISOString(),
-          clock: clock(elapsed),
+          clock: formatClock(elapsedSeconds),
+          phase: step.phase,
+          toolName: step.toolName,
+          targetAgent: step.targetAgent,
+          payloadSummary: step.payloadSummary,
+          isConflict: step.isConflict,
+          isReplan: step.isReplan,
         };
-        send({ type: "event", event: completed });
-        await sleep(Math.round(delay / 3));
+
+        send({ type: "event", event: completedEvent });
+        await sleep(Math.round(step.delayMs * 0.3));
       }
 
-      send({ type: "complete", run });
+      send({ type: "complete", run: plan.finalRun });
       controller.close();
     },
   });

@@ -1,3 +1,4 @@
+
 import type {
   BaselineComparison,
   ModelName,
@@ -7,13 +8,19 @@ import type {
 } from "@/lib/types";
 import { mulberry32, round, seedFrom } from "./generators";
 
-const MODELS: ModelName[] = ["Logistic Regression", "Random Forest", "XGBoost", "Ensemble"];
+const MODELS: ModelName[] = [
+  "Logistic Regression",
+  "Random Forest",
+  "XGBoost",
+  "Ensemble",
+];
 
 export function buildModelReport(): ModelPerformanceReport {
   const rand = mulberry32(seedFrom("model-report-v1"));
 
   const models: ModelPerformance[] = MODELS.map((model, i) => {
     const acc = round(0.52 + i * 0.02 + rand() * 0.04, 3);
+
     return {
       model,
       classification: {
@@ -32,7 +39,14 @@ export function buildModelReport(): ModelPerformanceReport {
     };
   });
 
-  const quarters = ["2024 Q1", "2024 Q2", "2024 Q3", "2024 Q4", "2025 Q1"];
+  const quarters = [
+    "2024 Q1",
+    "2024 Q2",
+    "2024 Q3",
+    "2024 Q4",
+    "2025 Q1",
+  ];
+
   const walkForward: WalkForwardPeriod[] = quarters.map((period) => ({
     period,
     trainWindow: `rolling 24m → ${period}`,
@@ -42,11 +56,33 @@ export function buildModelReport(): ModelPerformanceReport {
   }));
 
   const baselines: BaselineComparison[] = [
-    { name: "Naive Baseline", accuracy: 0.5, rocAuc: 0.5, note: "Majority-class / random walk reference" },
-    { name: "Technical-only", accuracy: round(0.53 + rand() * 0.02, 3), rocAuc: round(0.55 + rand() * 0.02, 3) },
-    { name: "Fundamental-only", accuracy: round(0.52 + rand() * 0.02, 3), rocAuc: round(0.54 + rand() * 0.02, 3) },
-    { name: "News-only", accuracy: round(0.515 + rand() * 0.02, 3), rocAuc: round(0.53 + rand() * 0.02, 3) },
-    { name: "Multi-source", accuracy: round(0.57 + rand() * 0.02, 3), rocAuc: round(0.6 + rand() * 0.02, 3), note: "Combined feature set" },
+    {
+      name: "Naive Baseline",
+      accuracy: 0.5,
+      rocAuc: 0.5,
+      note: "Majority-class / random walk reference",
+    },
+    {
+      name: "Technical-only",
+      accuracy: round(0.53 + rand() * 0.02, 3),
+      rocAuc: round(0.55 + rand() * 0.02, 3),
+    },
+    {
+      name: "Fundamental-only",
+      accuracy: round(0.52 + rand() * 0.02, 3),
+      rocAuc: round(0.54 + rand() * 0.02, 3),
+    },
+    {
+      name: "News-only",
+      accuracy: round(0.515 + rand() * 0.02, 3),
+      rocAuc: round(0.53 + rand() * 0.02, 3),
+    },
+    {
+      name: "Multi-source",
+      accuracy: round(0.57 + rand() * 0.02, 3),
+      rocAuc: round(0.6 + rand() * 0.02, 3),
+      note: "Combined feature set",
+    },
   ];
 
   return {
