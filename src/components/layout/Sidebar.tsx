@@ -52,7 +52,7 @@ export function Sidebar({
       >
         {/* Brand Header with Official Logo */}
         <div className="flex h-16 shrink-0 items-center justify-between border-b border-border/80 px-4">
-          <Link href="/dashboard" className="group flex items-center gap-3" onClick={onClose}>
+          <Link href="/" className="group flex items-center gap-3" onClick={onClose} title="Arthaya Home & Overview">
             <div className="relative flex size-9 items-center justify-center rounded-lg border border-accent/30 bg-bg p-1 shadow-inner transition-all duration-300 group-hover:border-accent group-hover:shadow-[0_0_14px_rgba(16,185,129,0.35)]">
               <Image
                 src="/arthaya_logo.png"

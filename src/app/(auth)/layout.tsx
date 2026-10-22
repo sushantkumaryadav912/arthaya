@@ -10,7 +10,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       
       <div className="relative z-10 w-full max-w-md space-y-6">
         <div className="flex flex-col items-center gap-3 text-center">
-          <Link href="/dashboard" className="group flex flex-col items-center gap-2">
+          <Link href="/" className="group flex flex-col items-center gap-2" title="Back to Arthaya Home">
             <div className="relative flex size-14 items-center justify-center rounded-2xl border border-accent/40 bg-surface/80 p-2.5 shadow-2xl backdrop-blur transition-all duration-300 group-hover:scale-105 group-hover:border-accent group-hover:shadow-[0_0_30px_rgba(16,185,129,0.35)]">
               <Image
                 src="/arthaya_logo.png"

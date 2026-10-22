@@ -81,7 +81,7 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
       </button>
 
       {/* Mobile Brand Logo */}
-      <Link href="/dashboard" className="flex items-center gap-2 lg:hidden">
+      <Link href="/" className="flex items-center gap-2 lg:hidden" title="Arthaya Home & Overview">
         <div className="relative flex size-7 items-center justify-center rounded-md border border-accent/30 bg-bg p-0.5 shadow-sm">
           <Image
             src="/arthaya_logo.png"
