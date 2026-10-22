@@ -275,7 +275,12 @@ export function AnalyzeWorkspace() {
       )}
 
       {/* Synthesis Report */}
-      {run?.summary && <AIResearchSummary summary={run.summary} />}
+      {run?.summary && (
+        <AIResearchSummary
+          summary={run.summary}
+          modelGateway={run.modelGateway || gatewayProvider}
+        />
+      )}
     </div>
   );
 }
