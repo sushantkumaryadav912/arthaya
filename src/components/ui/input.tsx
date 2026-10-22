@@ -26,11 +26,12 @@ export function Select({ className, ...props }: React.SelectHTMLAttributes<HTMLS
   return (
     <select
       className={cn(
-        "h-9.5 rounded-lg border border-border-strong/80 bg-surface/90 px-3.5 text-sm text-fg transition-all duration-200 focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/20 focus-visible:outline-none shadow-inner cursor-pointer",
+        "flex h-9.5 w-full min-w-0 max-w-full rounded-lg border border-border-strong/80 bg-surface/90 px-3 text-sm text-fg transition-all duration-200 focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/20 focus-visible:outline-none shadow-inner cursor-pointer truncate",
         className,
       )}
       {...props}
     />
   );
 }
+
 

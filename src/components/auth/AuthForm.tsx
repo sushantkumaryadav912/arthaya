@@ -189,8 +189,8 @@ function AuthFormInner({ mode }: { mode: Mode }) {
                   <User className="size-3.5 text-accent" /> 1. Personal Information
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="space-y-1 min-w-0">
                     <Label htmlFor="firstName">First Name *</Label>
                     <Input
                       id="firstName"
@@ -200,7 +200,7 @@ function AuthFormInner({ mode }: { mode: Mode }) {
                       required
                     />
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1 min-w-0">
                     <Label htmlFor="lastName">Last Name *</Label>
                     <Input
                       id="lastName"
@@ -212,8 +212,8 @@ function AuthFormInner({ mode }: { mode: Mode }) {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="space-y-1 min-w-0">
                     <Label htmlFor="email">Work / Professional Email *</Label>
                     <Input
                       id="email"
@@ -225,7 +225,7 @@ function AuthFormInner({ mode }: { mode: Mode }) {
                       required
                     />
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1 min-w-0">
                     <Label htmlFor="phone">Phone / Mobile (with country code)</Label>
                     <Input
                       id="phone"
@@ -245,8 +245,8 @@ function AuthFormInner({ mode }: { mode: Mode }) {
                   <Briefcase className="size-3.5 text-accent" /> 2. Professional & Market Profile
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="space-y-1 min-w-0">
                     <Label htmlFor="organization">Firm / Organization / Fund *</Label>
                     <Input
                       id="organization"
@@ -256,55 +256,55 @@ function AuthFormInner({ mode }: { mode: Mode }) {
                       required
                     />
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1 min-w-0">
                     <Label htmlFor="role">Professional Role / Title</Label>
                     <Select
                       id="role"
                       value={role}
                       onChange={(e) => setRole(e.target.value)}
                     >
-                      <option value="Quantitative Analyst">Quantitative Analyst / Modeler</option>
+                      <option value="Quantitative Analyst">Quantitative Analyst</option>
                       <option value="Portfolio Manager">Portfolio Manager</option>
                       <option value="Equity Research Analyst">Equity Research Analyst</option>
                       <option value="Hedge Fund Trader">Hedge Fund / Prop Trader</option>
-                      <option value="Risk Officer">Risk Management & Compliance</option>
-                      <option value="Private Investor">Private Investor / Family Office</option>
-                      <option value="Financial Researcher">Academic & Financial Student</option>
+                      <option value="Risk Officer">Risk Management</option>
+                      <option value="Private Investor">Private Investor</option>
+                      <option value="Financial Researcher">Academic Researcher</option>
                     </Select>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="space-y-1 min-w-0">
                     <Label htmlFor="marketFocus">Primary Market Focus</Label>
                     <Select
                       id="marketFocus"
                       value={marketFocus}
                       onChange={(e) => setMarketFocus(e.target.value)}
                     >
-                      <option value="US Equities & Tech (NASDAQ / NYSE)">US Equities & Tech (NASDAQ / NYSE)</option>
-                      <option value="Indian Equities (NSE / BSE)">Indian Equities (NSE / BSE)</option>
-                      <option value="Global Multi-Asset & Macro">Global Multi-Asset & Macro</option>
-                      <option value="Quantitative & Statistical Arbitrage">Quantitative Factor & Stat-Arb</option>
-                      <option value="Fundamental Long/Short">Fundamental Long / Short</option>
+                      <option value="US Equities & Tech (NASDAQ / NYSE)">US Equities & Tech</option>
+                      <option value="Indian Equities (NSE / BSE)">Indian Equities (NSE/BSE)</option>
+                      <option value="Global Multi-Asset & Macro">Global Multi-Asset</option>
+                      <option value="Quantitative & Statistical Arbitrage">Quant & Stat-Arb</option>
+                      <option value="Fundamental Long/Short">Fundamental Long/Short</option>
                     </Select>
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1 min-w-0">
                     <Label htmlFor="horizon">Default Analysis Horizon</Label>
                     <Select
                       id="horizon"
                       value={horizon}
                       onChange={(e) => setHorizon(e.target.value)}
                     >
-                      <option value="1D">1-Day Tactical & High-Frequency</option>
-                      <option value="5D">5-Day Multi-Agent Predictive Horizon (Standard)</option>
-                      <option value="20D">20-Day Position & Momentum</option>
-                      <option value="60D">60-Day+ Long-Term Fundamental</option>
+                      <option value="1D">1-Day Tactical</option>
+                      <option value="5D">5-Day Predictive (Standard)</option>
+                      <option value="20D">20-Day Position</option>
+                      <option value="60D">60-Day Long-Term</option>
                     </Select>
                   </div>
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-1 min-w-0">
                   <Label htmlFor="aumRange">Managed AUM / Trading Portfolio Band</Label>
                   <Select
                     id="aumRange"
@@ -326,8 +326,8 @@ function AuthFormInner({ mode }: { mode: Mode }) {
                   <ShieldCheck className="size-3.5 text-accent" /> 3. Security Credentials
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="space-y-1 min-w-0">
                     <Label htmlFor="password">Create Password (min 6 chars) *</Label>
                     <div className="relative">
                       <Input
@@ -350,7 +350,7 @@ function AuthFormInner({ mode }: { mode: Mode }) {
                       </button>
                     </div>
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1 min-w-0">
                     <Label htmlFor="confirmPassword">Confirm Password *</Label>
                     <Input
                       id="confirmPassword"
@@ -395,16 +395,27 @@ function AuthFormInner({ mode }: { mode: Mode }) {
                   />
                   <span>
                     I agree to the{" "}
-                    <Link href="/terms" className="text-accent underline underline-offset-2">
+                    <Link
+                      href="/terms"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-accent underline underline-offset-2 hover:text-accent-hover font-medium inline-flex items-center gap-0.5"
+                    >
                       Terms of Service
                     </Link>{" "}
                     and{" "}
-                    <Link href="/privacy" className="text-accent underline underline-offset-2">
+                    <Link
+                      href="/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-accent underline underline-offset-2 hover:text-accent-hover font-medium inline-flex items-center gap-0.5"
+                    >
                       Privacy Policy
                     </Link>
                     .
                   </span>
                 </label>
+
 
                 <label className="flex items-start gap-2.5 cursor-pointer text-fg-muted hover:text-fg">
                   <input
