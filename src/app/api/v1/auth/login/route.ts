@@ -1,6 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { signJwt, AUTH_COOKIE_NAME } from "@/lib/auth/jwt";
 
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_API_BASE || "https://arthaya-backend-1xdm.onrender.com";
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -20,15 +23,54 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Standard demo analyst identity
     const normalizedEmail = email.trim().toLowerCase();
     const name =
       normalizedEmail.startsWith("analyst")
         ? "Lead Quantitative Analyst"
         : normalizedEmail.split("@")[0].replace(/[._]/g, " ");
 
-    const userId = `usr_${Buffer.from(normalizedEmail).toString("hex").slice(0, 10)}`;
+    // 1. Authenticate with live Render backend
+    try {
+      const backendRes = await fetch(`${BACKEND_URL}/api/v1/auth/dev-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: normalizedEmail,
+          name,
+          role: "analyst",
+        }),
+      });
 
+      if (backendRes.ok) {
+        const backendData = await backendRes.json();
+        const token = backendData.access_token;
+        const user = backendData.user;
+
+        const response = NextResponse.json({
+          success: true,
+          token,
+          user,
+          message: "Authentication successful via live backend.",
+        });
+
+        response.cookies.set({
+          name: AUTH_COOKIE_NAME,
+          value: token,
+          httpOnly: false,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/",
+          maxAge: 7 * 24 * 3600,
+        });
+
+        return response;
+      }
+    } catch (backendErr) {
+      console.warn("Backend auth call warning:", backendErr);
+    }
+
+    // 2. Fallback local token if backend unreachable
+    const userId = `usr_${Buffer.from(normalizedEmail).toString("hex").slice(0, 10)}`;
     const token = await signJwt({
       sub: userId,
       email: normalizedEmail,
@@ -53,7 +95,7 @@ export async function POST(req: NextRequest) {
     response.cookies.set({
       name: AUTH_COOKIE_NAME,
       value: token,
-      httpOnly: false, // Allow client JS access while also being available to HTTP requests
+      httpOnly: false,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
