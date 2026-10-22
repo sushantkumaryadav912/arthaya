@@ -6,6 +6,21 @@
 
 import { API_BASE, API_PREFIX } from "@/lib/utils/env";
 
+export interface RegisterData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword?: string;
+  phone?: string;
+  organization?: string;
+  role?: string;
+  marketFocus?: string;
+  horizon?: string;
+  aumRange?: string;
+  agreeToTerms?: boolean;
+}
+
 export interface AuthUser {
   id: string;
   email: string;
@@ -13,6 +28,11 @@ export interface AuthUser {
   role?: string;
   picture?: string;
   provider?: string;
+  organization?: string;
+  marketFocus?: string;
+  horizon?: string;
+  phone?: string;
+  aumRange?: string;
 }
 
 export interface ValidateResult {
@@ -23,7 +43,7 @@ export interface ValidateResult {
 
 export interface AuthProvider {
   signIn(email: string, password: string): Promise<AuthUser>;
-  signUp(email: string, password: string, name?: string): Promise<AuthUser>;
+  signUp(dataOrEmail: RegisterData | string, password?: string, name?: string): Promise<AuthUser>;
   forgotPassword(email: string): Promise<void>;
   signOut(): Promise<void>;
   getCurrentUser(): Promise<AuthUser | null>;
@@ -88,13 +108,52 @@ class JwtAuthProvider implements AuthProvider {
     return user;
   }
 
-  async signUp(email: string, password: string, name?: string): Promise<AuthUser> {
+  async signUp(
+    dataOrEmail: RegisterData | string,
+    passwordArg?: string,
+    nameArg?: string,
+  ): Promise<AuthUser> {
+    let email: string;
+    let password: string;
+    let name: string;
+    let role = "analyst";
+    let organization = "";
+    let marketFocus = "";
+    let horizon = "5D";
+    let phone = "";
+    let aumRange = "";
+
+    if (typeof dataOrEmail === "object") {
+      email = dataOrEmail.email.trim().toLowerCase();
+      password = dataOrEmail.password;
+      name = `${dataOrEmail.firstName || ""} ${dataOrEmail.lastName || ""}`.trim() || email.split("@")[0];
+      role = dataOrEmail.role || "analyst";
+      organization = dataOrEmail.organization || "";
+      marketFocus = dataOrEmail.marketFocus || "";
+      horizon = dataOrEmail.horizon || "5D";
+      phone = dataOrEmail.phone || "";
+      aumRange = dataOrEmail.aumRange || "";
+    } else {
+      email = dataOrEmail.trim().toLowerCase();
+      password = passwordArg || "";
+      name = nameArg || email.split("@")[0];
+    }
+
     const backendUrl = `${API_BASE}${API_PREFIX}/auth/dev-login`;
-    const res = await fetch(backendUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, name: name || email.split("@")[0], role: "user" }),
-    });
+    let res: Response;
+    try {
+      res = await fetch(backendUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, name, role }),
+      });
+    } catch {
+      res = await fetch("/api/v1/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, name, role, organization, marketFocus, horizon, phone, aumRange }),
+      });
+    }
 
     const data = await res.json();
     const token = data.access_token || data.token;
@@ -103,7 +162,18 @@ class JwtAuthProvider implements AuthProvider {
       throw new Error(data.detail || data.error || "Failed to register account.");
     }
 
-    const user: AuthUser = data.user;
+    const user: AuthUser = {
+      ...(data.user || {}),
+      id: data.user?.id || `usr_${email.split("@")[0]}`,
+      email,
+      name,
+      role,
+      organization,
+      marketFocus,
+      horizon,
+      phone,
+      aumRange,
+    };
 
     if (typeof window !== "undefined") {
       localStorage.setItem(TOKEN_KEY, token);
@@ -161,7 +231,11 @@ class JwtAuthProvider implements AuthProvider {
         const data = await res.json();
         if (data.authenticated && data.user) {
           if (typeof window !== "undefined") {
-            localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+            const current = await this.getCurrentUser();
+            localStorage.setItem(
+              USER_KEY,
+              JSON.stringify({ ...(current || {}), ...data.user }),
+            );
           }
           return { valid: true, authorized: true, user: data.user as AuthUser };
         }
@@ -176,7 +250,6 @@ class JwtAuthProvider implements AuthProvider {
         return { valid: false, authorized: false, user: null };
       }
 
-      // In case of temporary network timeout, check if token is structurally valid
       const user = await this.getCurrentUser();
       return { valid: true, authorized: true, user };
     } catch {
