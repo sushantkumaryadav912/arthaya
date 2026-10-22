@@ -2,6 +2,7 @@ import { DEMO_MODE } from "@/lib/utils/env";
 import { apiGet } from "./client";
 import type {
   FundamentalAnalysis,
+  MetricValue,
   NewsAnalysis,
   TechnicalAnalysis,
   TechnicalIndicator,
@@ -62,13 +63,17 @@ export async function getTechnical(ticker: string): Promise<TechnicalAnalysis | 
     const raw = await apiGet<BackendTechnical>(`/stocks/${ticker}/technical`);
     if (!raw || !fallback) return fallback;
 
-    // Apply live indicators from backend
     const indicators: TechnicalIndicator[] = fallback.indicators.map((ind) => {
       if (ind.key === "rsi" && raw.rsi_14 !== undefined) {
         return {
           ...ind,
           value: raw.rsi_14,
-          interpretation: raw.rsi_14 > 70 ? "Overbought territory" : raw.rsi_14 < 30 ? "Oversold bounce watch" : "Neutral range",
+          interpretation:
+            raw.rsi_14 > 70
+              ? "Overbought territory"
+              : raw.rsi_14 < 30
+              ? "Oversold bounce watch"
+              : "Neutral range",
           status: raw.rsi_14 > 70 ? "negative" : raw.rsi_14 < 30 ? "positive" : "neutral",
         };
       }
@@ -109,16 +114,33 @@ export async function getFundamentals(ticker: string): Promise<FundamentalAnalys
     const raw = await apiGet<BackendFundamentals>(`/stocks/${ticker}/fundamentals`);
     if (!raw || !fallback) return fallback;
 
+    const valuation: MetricValue[] = fallback.valuation.map((v) => {
+      if (v.label.toLowerCase().includes("p/e") && raw.pe_ratio !== undefined) {
+        return { ...v, value: raw.pe_ratio };
+      }
+      if (v.label.toLowerCase().includes("p/b") && raw.pb_ratio !== undefined) {
+        return { ...v, value: raw.pb_ratio };
+      }
+      if (v.label.toLowerCase().includes("p/s") && raw.ps_ratio !== undefined) {
+        return { ...v, value: raw.ps_ratio };
+      }
+      return v;
+    });
+
+    const profitability: MetricValue[] = fallback.profitability.map((p) => {
+      if (p.label.toLowerCase().includes("roe") && raw.roe !== undefined) {
+        return { ...p, value: raw.roe };
+      }
+      if (p.label.toLowerCase().includes("roa") && raw.roa !== undefined) {
+        return { ...p, value: raw.roa };
+      }
+      return p;
+    });
+
     return {
       ...fallback,
-      ratios: fallback.ratios.map((r) => {
-        if (r.key === "pe" && raw.pe_ratio !== undefined) return { ...r, value: raw.pe_ratio };
-        if (r.key === "pb" && raw.pb_ratio !== undefined) return { ...r, value: raw.pb_ratio };
-        if (r.key === "ps" && raw.ps_ratio !== undefined) return { ...r, value: raw.ps_ratio };
-        if (r.key === "roe" && raw.roe !== undefined) return { ...r, value: raw.roe };
-        if (r.key === "debt_equity" && raw.debt_to_equity !== undefined) return { ...r, value: raw.debt_to_equity };
-        return r;
-      }),
+      valuation,
+      profitability,
     };
   } catch (err) {
     console.warn(`Could not load /stocks/${ticker}/fundamentals from backend:`, err);
@@ -134,10 +156,13 @@ export async function getNews(ticker: string): Promise<NewsAnalysis | null> {
     const raw = await apiGet<BackendNews>(`/stocks/${ticker}/news`);
     if (!raw || !fallback) return fallback;
 
+    const pos = raw.positive_events ?? fallback.distribution.positive;
+    const neg = raw.negative_events ?? fallback.distribution.negative;
+    const neu = raw.neutral_events ?? fallback.distribution.neutral;
+
     return {
       ...fallback,
-      sentimentScore: raw.sentiment_score ?? fallback.sentimentScore,
-      summary: raw.interpretation ?? fallback.summary,
+      distribution: { positive: pos, neutral: neu, negative: neg },
     };
   } catch (err) {
     console.warn(`Could not load /stocks/${ticker}/news from backend:`, err);

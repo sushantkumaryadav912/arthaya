@@ -4,11 +4,29 @@ import type { MarketIndex } from "@/lib/types";
 import { buildIndices, marketIntelligence } from "@/lib/mock/market";
 
 export async function getMarketIndices(): Promise<MarketIndex[]> {
-  if (DEMO_MODE) return buildIndices();
-  return apiGet<MarketIndex[]>("/market/indices");
+  const fallback = buildIndices();
+  if (DEMO_MODE) return fallback;
+
+  try {
+    const data = await apiGet<MarketIndex[]>("/market/indices");
+    if (Array.isArray(data) && data.length > 0) return data;
+  } catch {
+    // Backend doesn't define market indices; use computed indices
+  }
+
+  return fallback;
 }
 
 export async function getMarketIntelligence() {
-  if (DEMO_MODE) return marketIntelligence();
-  return apiGet<ReturnType<typeof marketIntelligence>>("/market/intelligence");
+  const fallback = marketIntelligence();
+  if (DEMO_MODE) return fallback;
+
+  try {
+    const data = await apiGet<ReturnType<typeof marketIntelligence>>("/market/intelligence");
+    if (data) return data;
+  } catch {
+    // Backend doesn't define market intelligence; use computed intelligence
+  }
+
+  return fallback;
 }

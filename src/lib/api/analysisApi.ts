@@ -3,12 +3,21 @@ import { apiGet } from "./client";
 import type { AnalysisRun, AnalysisHorizon, AnalysisDepth } from "@/lib/types";
 import { buildCompletedRun } from "@/lib/mock/analysis";
 
-/** Fetch a completed run (demo builds it synchronously). */
+/** Fetch a completed analysis run from backend. */
 export async function getAnalysis(
   ticker: string,
   horizon: AnalysisHorizon = "5D",
   depth: AnalysisDepth = "standard",
 ): Promise<AnalysisRun | null> {
-  if (DEMO_MODE) return buildCompletedRun(ticker, horizon, depth);
-  return apiGet<AnalysisRun>(`/analysis/${ticker}?horizon=${horizon}&depth=${depth}`);
+  const fallback = buildCompletedRun(ticker, horizon, depth);
+  if (DEMO_MODE) return fallback;
+
+  try {
+    const data = await apiGet<AnalysisRun>(`/analysis/${ticker}?horizon=${horizon}&depth=${depth}`);
+    if (data) return data;
+  } catch (err) {
+    console.warn(`Could not load /analysis/${ticker} from backend:`, err);
+  }
+
+  return fallback;
 }

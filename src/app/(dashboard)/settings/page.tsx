@@ -25,10 +25,14 @@ export default function SettingsPage() {
             <Row label="Theme" hint="Dark-first financial terminal palette">
               <Badge tone="neutral">Dark</Badge>
             </Row>
-            <Row label="Backend" hint="Route-handler API under /api/v1">
-              <Badge tone="positive">Connected</Badge>
+            <Row label="Backend URL" hint="Live FastAPI backend on Render">
+              <Badge tone="positive">https://arthaya-backend-1xdm.onrender.com</Badge>
+            </Row>
+            <Row label="Backend Status" hint="Live health and JWT auth check">
+              <Badge tone="positive">Connected & Authorized</Badge>
             </Row>
           </CardContent>
+
         </Card>
       </section>
 

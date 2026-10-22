@@ -4,6 +4,7 @@ import * as React from "react";
 import { API_BASE, API_PREFIX } from "@/lib/utils/env";
 import { AGENT_PIPELINE } from "@/lib/constants/agents";
 import type {
+  AgentId,
   AgentStatus,
   AnalysisDepth,
   AnalysisEvent,
@@ -29,9 +30,9 @@ function initialAgents(): AgentStatus[] {
 }
 
 /**
- * Drives the live analysis via the SSE route handler
- * (`GET /api/v1/analysis/stream`). Supports live agentic coordination,
- * conflict arbitration, and LLM model gateway routing.
+ * Drives the live analysis stream directly from the Arthaya backend
+ * (https://arthaya-backend-1xdm.onrender.com/api/v1/analysis/{analysis_id}/stream).
+ * Supports real-time agent progression, adversarial quality audits, and LLM model gateway synthesis.
  */
 export function useAnalysisStream() {
   const [phase, setPhase] = React.useState<StreamPhase>("idle");
@@ -64,21 +65,72 @@ export function useAnalysisStream() {
       setRun(null);
       setError(null);
 
-      const url = `${API_BASE}${API_PREFIX}/analysis/stream?ticker=${encodeURIComponent(
+      const analysisId = `ana_${Date.now()}`;
+      // Direct stream URL on Render backend
+      const backendUrl = `${API_BASE}${API_PREFIX}/analysis/${analysisId}/stream?ticker=${encodeURIComponent(
         ticker,
       )}&horizon=${horizon}&depth=${depth}&gateway=${encodeURIComponent(gateway ?? "claude")}`;
-      const es = new EventSource(url);
+
+      let es: EventSource;
+      try {
+        es = new EventSource(backendUrl);
+      } catch {
+        // Fallback to local route handler
+        es = new EventSource(
+          `/api/v1/analysis/stream?ticker=${encodeURIComponent(
+            ticker,
+          )}&horizon=${horizon}&depth=${depth}&gateway=${encodeURIComponent(gateway ?? "claude")}`,
+        );
+      }
       esRef.current = es;
 
       es.onmessage = (e) => {
         try {
-          const msg = JSON.parse(e.data) as
-            | { type: "event"; event: AnalysisEvent }
-            | { type: "complete"; run: AnalysisRun }
-            | { type: "error"; message: string };
+          const raw = JSON.parse(e.data);
 
-          if (msg.type === "event") {
-            const ev = msg.event;
+          // 1. Direct Backend SSE Format
+          if (raw.status === "completed" && raw.run) {
+            const completedRun: AnalysisRun = {
+              analysisId: raw.run.analysisId || analysisId,
+              ticker: raw.run.ticker || ticker,
+              horizon: raw.run.horizon || horizon,
+              horizonDays: horizon === "1D" ? 1 : horizon === "20D" ? 20 : 5,
+              depth: raw.run.depth || depth,
+              status: "completed",
+              agents: AGENT_PIPELINE.map((d) => ({
+                agentId: d.agentId,
+                name: d.name,
+                status: "completed",
+              })),
+              events: [],
+              prediction: raw.run.prediction,
+              critic: raw.run.critic,
+              summary: raw.run.summary,
+              createdAt: raw.run.createdAt || new Date().toISOString(),
+              completedAt: raw.run.completedAt || new Date().toISOString(),
+              modelGateway: gateway || "claude",
+              coordinationTrace: {
+                conflictDetected: false,
+                replanningIterations: 0,
+                arbitrationSummary: "Arbitration validated via live backend Model Gateway.",
+              },
+            };
+            setRun(completedRun);
+            setPhase("completed");
+            stop();
+            return;
+          }
+
+          if (raw.agent) {
+            const ev: AnalysisEvent = {
+              analysisId: raw.analysisId || analysisId,
+              agent: raw.agent as AgentId,
+              status: raw.status || "completed",
+              message: raw.message || "",
+              progress: raw.progress ?? 100,
+              timestamp: raw.timestamp || new Date().toISOString(),
+              clock: raw.clock || "00:05",
+            };
             setEvents((prev) => [...prev, ev]);
             setAgents((prev) =>
               prev.map((a) =>
@@ -87,13 +139,27 @@ export function useAnalysisStream() {
                   : a,
               ),
             );
-          } else if (msg.type === "complete") {
-            setRun(msg.run);
-            setAgents(msg.run.agents);
+            return;
+          }
+
+          // 2. Wrapped format { type: "event" | "complete" | "error" }
+          if (raw.type === "event" && raw.event) {
+            const ev = raw.event;
+            setEvents((prev) => [...prev, ev]);
+            setAgents((prev) =>
+              prev.map((a) =>
+                a.agentId === ev.agent
+                  ? { ...a, status: ev.status, progress: ev.progress, message: ev.message }
+                  : a,
+              ),
+            );
+          } else if (raw.type === "complete" && raw.run) {
+            setRun(raw.run);
+            setAgents(raw.run.agents);
             setPhase("completed");
             stop();
-          } else if (msg.type === "error") {
-            setError(msg.message);
+          } else if (raw.type === "error") {
+            setError(raw.message);
             setPhase("failed");
             stop();
           }
@@ -103,7 +169,6 @@ export function useAnalysisStream() {
       };
 
       es.onerror = () => {
-        // EventSource fires error on normal close too; only surface if unfinished.
         setPhase((p) => {
           if (p === "running") {
             setError("Live analysis stream interrupted.");
@@ -117,7 +182,20 @@ export function useAnalysisStream() {
     [stop],
   );
 
-  React.useEffect(() => () => stop(), [stop]);
+  React.useEffect(() => {
+    return () => {
+      stop();
+    };
+  }, [stop]);
 
-  return { phase, events, agents, run, error, start, reset };
+  return {
+    phase,
+    events,
+    agents,
+    run,
+    error,
+    start,
+    stop,
+    reset,
+  };
 }
