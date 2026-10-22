@@ -1,4 +1,4 @@
-import { DEMO_MODE } from "@/lib/utils/env";
+import { isDemoSessionAsync } from "@/lib/utils/env";
 import { apiGet } from "./client";
 import type { StockOverview, StockSummary } from "@/lib/types";
 import { allSummaries, buildOverview, searchUniverse, toSummary } from "@/lib/mock/stocks";
@@ -23,7 +23,7 @@ interface BackendStockResponse {
 }
 
 export async function searchStocks(q: string): Promise<StockSummary[]> {
-  if (DEMO_MODE) return searchUniverse(q).map(toSummary);
+  if (await isDemoSessionAsync()) return searchUniverse(q).map(toSummary);
   try {
     return await apiGet<StockSummary[]>(`/stocks?q=${encodeURIComponent(q)}`);
   } catch {
@@ -32,7 +32,7 @@ export async function searchStocks(q: string): Promise<StockSummary[]> {
 }
 
 export async function listStocks(): Promise<StockSummary[]> {
-  if (DEMO_MODE) return allSummaries();
+  if (await isDemoSessionAsync()) return allSummaries();
   try {
     const data = await apiGet<StockSummary[]>("/stocks");
     if (Array.isArray(data) && data.length > 0) return data;
@@ -44,7 +44,7 @@ export async function listStocks(): Promise<StockSummary[]> {
 
 export async function getStockOverview(ticker: string): Promise<StockOverview | null> {
   const fallback = buildOverview(ticker);
-  if (DEMO_MODE) return fallback;
+  if (await isDemoSessionAsync()) return fallback;
 
   try {
     const raw = await apiGet<BackendStockResponse>(`/stocks/${ticker}`);

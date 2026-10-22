@@ -14,16 +14,17 @@ import { getMarketIndices, getMarketIntelligence } from "@/lib/api/marketApi";
 import { getWatchlist, DEFAULT_WATCHLIST } from "@/lib/api/watchlistApi";
 import { getAllPredictions } from "@/lib/api/predictionApi";
 import { getReports } from "@/lib/api/reportApi";
-import { DEMO_MODE } from "@/lib/utils/env";
+import { isDemoSessionAsync } from "@/lib/utils/env";
 import { formatNumber, timeAgo } from "@/lib/utils/format";
 
 export default async function DashboardPage() {
-  const [indices, intel, watchlist, predictions, reports] = await Promise.all([
+  const [indices, intel, watchlist, predictions, reports, isDemo] = await Promise.all([
     getMarketIndices(),
     getMarketIntelligence(),
     getWatchlist(DEFAULT_WATCHLIST),
     getAllPredictions(5),
     getReports(),
+    isDemoSessionAsync(),
   ]);
 
   return (
@@ -32,13 +33,13 @@ export default async function DashboardPage() {
         title="Market Overview"
         description="Multi-agent market intelligence across US & India equities."
         disclaimer={
-          DEMO_MODE
+          isDemo
             ? "Demo data — illustrative figures only. Nothing here is investment advice."
             : "Live multi-agent research signals synced with backend. Probabilistic models — not investment advice."
         }
         actions={
           <>
-            <DemoBadge />
+            <DemoBadge isDemo={isDemo} />
             <Link href="/analyze">
               <Button>
                 <Sparkles className="size-4" />
@@ -72,7 +73,7 @@ export default async function DashboardPage() {
         </div>
         <p className="mt-2 text-[11px] text-fg-subtle">
           <ProvenanceTag kind="market-data" className="mr-1" />{" "}
-          {DEMO_MODE ? "Index levels are demo values." : "Global equity indices synced for market regime classification."}
+          {isDemo ? "Index levels are demo values." : "Global equity indices synced for market regime classification."}
         </p>
       </section>
 
@@ -119,7 +120,7 @@ export default async function DashboardPage() {
                 ))}
               </ul>
               <p className="text-[10px] text-fg-subtle">
-                {DEMO_MODE
+                {isDemo
                   ? "AI-generated interpretation of demo data. Model probability, not certainty."
                   : "AI-generated multi-agent regime interpretation. Model probability, not certainty."}
               </p>

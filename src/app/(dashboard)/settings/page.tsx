@@ -2,24 +2,26 @@ import { PageIntro, SectionHeading } from "@/components/common/Headings";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DemoBadge } from "@/components/common/ProvenanceTag";
-import { DEMO_MODE } from "@/lib/utils/env";
+import { isDemoSessionAsync } from "@/lib/utils/env";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const isDemo = await isDemoSessionAsync();
+
   return (
     <>
       <PageIntro
         title="Settings"
-        description="Application preferences and environment. Account features are wired for a real auth provider but disabled in demo mode."
-        actions={<DemoBadge />}
+        description="Application preferences and environment. Account features are wired for real backend authentication."
+        actions={<DemoBadge isDemo={isDemo} />}
       />
 
       <section>
         <SectionHeading title="Environment" />
         <Card>
           <CardContent className="divide-y divide-border p-0">
-            <Row label="Mode" hint="Data source for the entire application">
-              <Badge tone={DEMO_MODE ? "warning" : "positive"}>
-                {DEMO_MODE ? "Demo (mock data)" : "Live backend"}
+            <Row label="Mode" hint="Data source for the active session">
+              <Badge tone={isDemo ? "warning" : "positive"}>
+                {isDemo ? "Demo (mock data)" : "Live backend"}
               </Badge>
             </Row>
             <Row label="Theme" hint="Dark-first financial terminal palette">

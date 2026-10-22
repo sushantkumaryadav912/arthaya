@@ -1,4 +1,4 @@
-import { DEMO_MODE } from "@/lib/utils/env";
+import { isDemoSessionAsync } from "@/lib/utils/env";
 import { apiGet } from "./client";
 import type { ReportSummary, ResearchReport } from "@/lib/types";
 import { buildReport, buildReportSummaries } from "@/lib/mock/reports";
@@ -32,7 +32,7 @@ interface BackendReportDetail extends BackendReportSummary {
 
 export async function getReports(): Promise<ReportSummary[]> {
   const fallback = buildReportSummaries();
-  if (DEMO_MODE) return fallback;
+  if (await isDemoSessionAsync()) return fallback;
 
   try {
     const data = await apiGet<BackendReportSummary[]>("/reports");
@@ -61,7 +61,7 @@ export async function getReports(): Promise<ReportSummary[]> {
 
 export async function getReport(id: string): Promise<ResearchReport | null> {
   const fallback = buildReport(id);
-  if (DEMO_MODE) return fallback;
+  if (await isDemoSessionAsync()) return fallback;
 
   try {
     const raw = await apiGet<BackendReportDetail>(`/reports/${id}`);

@@ -1,6 +1,10 @@
+"use client";
+
+import * as React from "react";
 import { FlaskConical } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import type { Provenance } from "@/lib/types";
+import { isDemoSession } from "@/lib/utils/env";
 
 const LABELS: Record<Provenance, string> = {
   "market-data": "Market data",
@@ -45,11 +49,25 @@ export function ProvenanceTag({
   );
 }
 
-import { DEMO_MODE } from "@/lib/utils/env";
-
 /** Persistent demo-mode or live backend marker. */
-export function DemoBadge({ className }: { className?: string }) {
-  if (!DEMO_MODE) {
+export function DemoBadge({
+  className,
+  isDemo: propIsDemo,
+}: {
+  className?: string;
+  isDemo?: boolean;
+}) {
+  const [isDemo, setIsDemo] = React.useState<boolean>(propIsDemo ?? false);
+
+  React.useEffect(() => {
+    if (propIsDemo !== undefined) {
+      setIsDemo(propIsDemo);
+    } else {
+      setIsDemo(isDemoSession());
+    }
+  }, [propIsDemo]);
+
+  if (!isDemo) {
     return (
       <span
         className={cn(
@@ -77,3 +95,4 @@ export function DemoBadge({ className }: { className?: string }) {
     </span>
   );
 }
+

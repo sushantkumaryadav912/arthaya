@@ -1,4 +1,4 @@
-import { DEMO_MODE } from "@/lib/utils/env";
+import { isDemoSessionAsync } from "@/lib/utils/env";
 import { apiGet } from "./client";
 import type { AgentId, AgentRunStatus, AgentStatus, ModelPerformanceReport } from "@/lib/types";
 import { buildAgentStatuses } from "@/lib/mock/agents";
@@ -6,7 +6,7 @@ import { buildModelReport } from "@/lib/mock/models";
 
 export async function getAgents(): Promise<AgentStatus[]> {
   const fallback = buildAgentStatuses();
-  if (DEMO_MODE) return fallback;
+  if (await isDemoSessionAsync()) return fallback;
 
   try {
     const raw = await apiGet<any[]>("/agents");
@@ -27,7 +27,7 @@ export async function getAgents(): Promise<AgentStatus[]> {
 
 export async function getModelPerformance(): Promise<ModelPerformanceReport> {
   const fallback = buildModelReport();
-  if (DEMO_MODE) return fallback;
+  if (await isDemoSessionAsync()) return fallback;
 
   try {
     const raw = await apiGet<ModelPerformanceReport>("/models/performance");

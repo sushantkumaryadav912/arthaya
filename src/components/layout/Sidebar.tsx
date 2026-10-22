@@ -141,7 +141,7 @@ export function Sidebar({
 
         {/* Footer: Demo badge, Logout, and User profile card */}
         <div className="shrink-0 space-y-3 border-t border-border/80 px-4 pt-3.5 pb-6 bg-surface/50">
-          <DemoBadge />
+          <DemoBadge isDemo={currentUser?.isDemo} />
 
           <button
             type="button"

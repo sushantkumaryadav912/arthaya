@@ -1,4 +1,4 @@
-import { DEMO_MODE } from "@/lib/utils/env";
+import { isDemoSessionAsync } from "@/lib/utils/env";
 import { apiGet } from "./client";
 import type {
   FundamentalAnalysis,
@@ -57,7 +57,7 @@ interface BackendNews {
 
 export async function getTechnical(ticker: string): Promise<TechnicalAnalysis | null> {
   const fallback = buildTechnical(ticker);
-  if (DEMO_MODE) return fallback;
+  if (await isDemoSessionAsync()) return fallback;
 
   try {
     const raw = await apiGet<BackendTechnical>(`/stocks/${ticker}/technical`);
@@ -108,7 +108,7 @@ export async function getTechnical(ticker: string): Promise<TechnicalAnalysis | 
 
 export async function getFundamentals(ticker: string): Promise<FundamentalAnalysis | null> {
   const fallback = buildFundamentals(ticker);
-  if (DEMO_MODE) return fallback;
+  if (await isDemoSessionAsync()) return fallback;
 
   try {
     const raw = await apiGet<BackendFundamentals>(`/stocks/${ticker}/fundamentals`);
@@ -150,7 +150,7 @@ export async function getFundamentals(ticker: string): Promise<FundamentalAnalys
 
 export async function getNews(ticker: string): Promise<NewsAnalysis | null> {
   const fallback = buildNews(ticker);
-  if (DEMO_MODE) return fallback;
+  if (await isDemoSessionAsync()) return fallback;
 
   try {
     const raw = await apiGet<BackendNews>(`/stocks/${ticker}/news`);

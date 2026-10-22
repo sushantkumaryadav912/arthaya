@@ -18,7 +18,20 @@ export async function ensureToken(): Promise<string | null> {
   let token = getStoredToken();
   if (token) return token;
 
-  // Auto-acquire dev-login token if in browser runtime
+  // Read auth token from Next.js request cookies in server components
+  if (typeof window === "undefined") {
+    try {
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      const cookieVal = cookieStore.get("arthaya_token")?.value;
+      if (cookieVal) return decodeURIComponent(cookieVal);
+    } catch {
+      // outside request scope
+    }
+    return null;
+  }
+
+  // Auto-acquire dev-login token if in browser runtime and no token exists
   if (typeof window !== "undefined") {
     try {
       const res = await fetch(`${API_BASE}${API_PREFIX}/auth/dev-login`, {
@@ -36,9 +49,11 @@ export async function ensureToken(): Promise<string | null> {
         if (token) {
           localStorage.setItem(TOKEN_KEY, token);
           if (data.user) {
-            localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+            localStorage.setItem(USER_KEY, JSON.stringify({ ...data.user, isDemo: true }));
           }
+          localStorage.setItem("arthaya:is_demo", "true");
           document.cookie = `arthaya_token=${encodeURIComponent(token)}; path=/; max-age=${7 * 86400}; SameSite=Lax`;
+          document.cookie = `arthaya_demo=true; path=/; max-age=${7 * 86400}; SameSite=Lax`;
           return token;
         }
       }

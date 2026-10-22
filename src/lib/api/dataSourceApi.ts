@@ -1,11 +1,11 @@
-import { DEMO_MODE } from "@/lib/utils/env";
+import { isDemoSessionAsync } from "@/lib/utils/env";
 import { apiGet } from "./client";
 import type { DataSourceInfo } from "@/lib/types";
 import { buildDataSources } from "@/lib/mock/datasources";
 
 export async function getDataSources(): Promise<{ group: string; sources: DataSourceInfo[] }[]> {
   const fallback = buildDataSources();
-  if (DEMO_MODE) return fallback;
+  if (await isDemoSessionAsync()) return fallback;
 
   try {
     const raw = await apiGet<any[]>("/data-sources");

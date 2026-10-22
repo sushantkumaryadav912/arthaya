@@ -1,4 +1,4 @@
-import { DEMO_MODE } from "@/lib/utils/env";
+import { isDemoSessionAsync } from "@/lib/utils/env";
 import { apiGet } from "./client";
 import type { AnalysisRun, AnalysisHorizon, AnalysisDepth } from "@/lib/types";
 import { buildCompletedRun } from "@/lib/mock/analysis";
@@ -10,7 +10,7 @@ export async function getAnalysis(
   depth: AnalysisDepth = "standard",
 ): Promise<AnalysisRun | null> {
   const fallback = buildCompletedRun(ticker, horizon, depth);
-  if (DEMO_MODE) return fallback;
+  if (await isDemoSessionAsync()) return fallback;
 
   try {
     const data = await apiGet<AnalysisRun>(`/analysis/${ticker}?horizon=${horizon}&depth=${depth}`);

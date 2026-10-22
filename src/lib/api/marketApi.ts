@@ -1,11 +1,11 @@
-import { DEMO_MODE } from "@/lib/utils/env";
+import { isDemoSessionAsync } from "@/lib/utils/env";
 import { apiGet } from "./client";
 import type { MarketIndex } from "@/lib/types";
 import { buildIndices, marketIntelligence } from "@/lib/mock/market";
 
 export async function getMarketIndices(): Promise<MarketIndex[]> {
   const fallback = buildIndices();
-  if (DEMO_MODE) return fallback;
+  if (await isDemoSessionAsync()) return fallback;
 
   try {
     const data = await apiGet<MarketIndex[]>("/market/indices");
@@ -19,7 +19,7 @@ export async function getMarketIndices(): Promise<MarketIndex[]> {
 
 export async function getMarketIntelligence() {
   const fallback = marketIntelligence();
-  if (DEMO_MODE) return fallback;
+  if (await isDemoSessionAsync()) return fallback;
 
   try {
     const data = await apiGet<ReturnType<typeof marketIntelligence>>("/market/intelligence");

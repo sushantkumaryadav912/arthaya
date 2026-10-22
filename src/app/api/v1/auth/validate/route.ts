@@ -31,14 +31,17 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  const isDemo = payload.email?.toLowerCase() === "analyst@arthaya.ai";
+
   return NextResponse.json({
     valid: true,
     authorized: true,
     user: {
       id: payload.sub,
       email: payload.email,
-      name: payload.name || "Quantitative Analyst",
-      role: payload.role,
+      name: payload.name || (isDemo ? "Lead Quantitative Analyst (Demo)" : "Quantitative Analyst"),
+      role: payload.role || "analyst",
+      isDemo,
     },
     expiresAt: payload.exp ? new Date(payload.exp * 1000).toISOString() : null,
   });

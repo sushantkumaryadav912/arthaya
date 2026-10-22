@@ -14,5 +14,12 @@ export async function POST() {
     maxAge: 0,
   });
 
+  response.cookies.set({
+    name: "arthaya_demo",
+    value: "",
+    path: "/",
+    maxAge: 0,
+  });
+
   return response;
 }

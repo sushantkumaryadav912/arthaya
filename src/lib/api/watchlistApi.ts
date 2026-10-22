@@ -1,4 +1,4 @@
-import { DEMO_MODE } from "@/lib/utils/env";
+import { isDemoSessionAsync } from "@/lib/utils/env";
 import { apiGet, apiSend } from "./client";
 import type { StockSummary } from "@/lib/types";
 import { toSummary, findSeed } from "@/lib/mock/stocks";
@@ -14,7 +14,7 @@ export function summariesForTickers(tickers: string[]): StockSummary[] {
 }
 
 export async function getWatchlist(tickers: string[]): Promise<StockSummary[]> {
-  if (DEMO_MODE) return summariesForTickers(tickers);
+  if (await isDemoSessionAsync()) return summariesForTickers(tickers);
 
   try {
     const rawList = await apiGet<any[]>("/watchlist");
@@ -46,7 +46,7 @@ export async function getWatchlist(tickers: string[]): Promise<StockSummary[]> {
 }
 
 export async function addToWatchlist(ticker: string): Promise<void> {
-  if (DEMO_MODE) return;
+  if (await isDemoSessionAsync()) return;
   try {
     await apiSend("/watchlist", "POST", { ticker });
   } catch (err) {
@@ -55,7 +55,7 @@ export async function addToWatchlist(ticker: string): Promise<void> {
 }
 
 export async function removeFromWatchlist(ticker: string): Promise<void> {
-  if (DEMO_MODE) return;
+  if (await isDemoSessionAsync()) return;
   try {
     await apiSend(`/watchlist/${ticker}`, "DELETE");
   } catch (err) {

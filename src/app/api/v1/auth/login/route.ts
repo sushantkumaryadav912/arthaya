@@ -24,9 +24,10 @@ export async function POST(req: NextRequest) {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
+    const isDemo = normalizedEmail === "analyst@arthaya.ai";
     const name =
       normalizedEmail.startsWith("analyst")
-        ? "Lead Quantitative Analyst"
+        ? "Lead Quantitative Analyst (Demo)"
         : normalizedEmail.split("@")[0].replace(/[._]/g, " ");
 
     // 1. Authenticate with live Render backend
@@ -37,25 +38,40 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({
           email: normalizedEmail,
           name,
-          role: "analyst",
+          role: isDemo ? "analyst" : "quantitative_analyst",
         }),
       });
 
       if (backendRes.ok) {
         const backendData = await backendRes.json();
         const token = backendData.access_token;
-        const user = backendData.user;
+        const user = {
+          ...(backendData.user || {}),
+          isDemo,
+        };
 
         const response = NextResponse.json({
           success: true,
           token,
           user,
-          message: "Authentication successful via live backend.",
+          message: isDemo
+            ? "Demo authentication successful."
+            : "Authentication successful via live backend.",
         });
 
         response.cookies.set({
           name: AUTH_COOKIE_NAME,
           value: token,
+          httpOnly: false,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/",
+          maxAge: 7 * 24 * 3600,
+        });
+
+        response.cookies.set({
+          name: "arthaya_demo",
+          value: isDemo ? "true" : "false",
           httpOnly: false,
           secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
@@ -75,26 +91,37 @@ export async function POST(req: NextRequest) {
       sub: userId,
       email: normalizedEmail,
       name,
-      role: "analyst",
+      role: isDemo ? "analyst" : "quantitative_analyst",
     });
 
     const user = {
       id: userId,
       email: normalizedEmail,
       name,
-      role: "analyst",
+      role: isDemo ? "analyst" : "quantitative_analyst",
+      isDemo,
     };
 
     const response = NextResponse.json({
       success: true,
       token,
       user,
-      message: "Authentication successful.",
+      message: isDemo ? "Demo session authenticated." : "Authentication successful.",
     });
 
     response.cookies.set({
       name: AUTH_COOKIE_NAME,
       value: token,
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 7 * 24 * 3600,
+    });
+
+    response.cookies.set({
+      name: "arthaya_demo",
+      value: isDemo ? "true" : "false",
       httpOnly: false,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
