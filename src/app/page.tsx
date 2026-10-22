@@ -207,16 +207,18 @@ const FAQS = [
 export default function HomePage() {
   const [selectedAgent, setSelectedAgent] = React.useState<string>("orchestrator");
   const [openFaq, setOpenFaq] = React.useState<number | null>(0);
-  const [isLight, setIsLight] = React.useState(false);
+  const [isLight, setIsLight] = React.useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [currentUser, setCurrentUser] = React.useState<AuthUser | null>(null);
 
-  // Initialize theme
+  // Default to light screen! Only switch to dark if explicitly configured as "dark"
   React.useEffect(() => {
     const stored = localStorage.getItem("arthaya:theme");
-    const lightMode = stored === "light";
+    const isDark = stored === "dark";
+    const lightMode = !isDark;
     setIsLight(lightMode);
     document.documentElement.classList.toggle("light", lightMode);
+    document.documentElement.classList.toggle("dark", isDark);
   }, []);
 
   // Validate JWT session with backend
@@ -244,6 +246,7 @@ export default function HomePage() {
     const next = !isLight;
     setIsLight(next);
     document.documentElement.classList.toggle("light", next);
+    document.documentElement.classList.toggle("dark", !next);
     localStorage.setItem("arthaya:theme", next ? "light" : "dark");
   };
 

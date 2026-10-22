@@ -26,14 +26,17 @@ function titleFor(pathname: string): string {
 }
 
 function ThemeToggle() {
-  const [light, setLight] = React.useState(false);
+  const [light, setLight] = React.useState(true);
   const [initialized, setInitialized] = React.useState(false);
 
   React.useEffect(() => {
     const stored = localStorage.getItem("arthaya:theme");
-    const isLight = stored === "light";
+    // Default to light screen! Only switch to dark if explicitly configured as "dark"
+    const isDark = stored === "dark";
+    const isLight = !isDark;
 
     document.documentElement.classList.toggle("light", isLight);
+    document.documentElement.classList.toggle("dark", isDark);
 
     // Defer state synchronization until after the effect callback.
     const frame = window.requestAnimationFrame(() => {
@@ -50,6 +53,7 @@ function ThemeToggle() {
     setLight(next);
     setInitialized(true);
     document.documentElement.classList.toggle("light", next);
+    document.documentElement.classList.toggle("dark", !next);
     localStorage.setItem("arthaya:theme", next ? "light" : "dark");
   };
 
@@ -60,6 +64,7 @@ function ThemeToggle() {
       className="flex size-9 items-center justify-center rounded-lg border border-transparent text-fg-muted hover:border-border-strong hover:bg-elevated hover:text-accent transition-all duration-200 active:scale-95 disabled:opacity-60"
       aria-label="Toggle theme"
       aria-pressed={light}
+      title={light ? "Switch to Dark Mode" : "Switch to Light Mode"}
     >
       {light ? <Moon className="size-4" /> : <Sun className="size-4" />}
     </button>

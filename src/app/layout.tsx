@@ -21,9 +21,27 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${displaySans.variable} ${textSans.variable} antialiased`}
+      className={`${displaySans.variable} ${textSans.variable} light antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var theme = localStorage.getItem('arthaya:theme');
+                if (theme === 'dark') {
+                  document.documentElement.classList.remove('light');
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.add('light');
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
       <body>{children}</body>
     </html>
   );
