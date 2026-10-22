@@ -143,14 +143,28 @@ export function AnalyzeWorkspace() {
                 ))}
               </Select>
             </div>
-            <div className="flex gap-2">
-              <Button type="submit" disabled={running} variant="glow" className="flex-1">
-                <Sparkles className="size-4" />
-                {running ? "Agents Reasoning…" : "Run Analysis"}
+            <div className="flex items-center gap-1.5">
+              <Button
+                type="submit"
+                size="sm"
+                disabled={running}
+                variant="glow"
+                className="flex-1 h-8 px-3 text-xs font-semibold"
+              >
+                <Sparkles className="size-3.5" />
+                <span>{running ? "Agents Reasoning…" : "Run Analysis"}</span>
               </Button>
               {phase !== "idle" && (
-                <Button type="button" variant="outline" onClick={reset} disabled={running}>
-                  <RotateCcw className="size-4" />
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={reset}
+                  disabled={running}
+                  className="size-8 p-0 shrink-0"
+                  title="Reset analysis"
+                >
+                  <RotateCcw className="size-3.5" />
                 </Button>
               )}
             </div>
