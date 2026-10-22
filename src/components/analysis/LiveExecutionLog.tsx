@@ -60,13 +60,13 @@ export function LiveExecutionLog({
           <Cpu className="size-3.5 text-accent" />
           <span>Multi-Agent Message Bus ({events.length} frames)</span>
           {conflictCount > 0 && (
-            <span className="flex items-center gap-1 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] text-amber-400 border border-amber-500/30">
+            <span className="flex items-center gap-1 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] text-amber-700 dark:text-amber-400 border border-amber-500/30 font-semibold">
               <AlertTriangle className="size-2.5" />
               {conflictCount} conflict
             </span>
           )}
           {replanCount > 0 && (
-            <span className="flex items-center gap-1 rounded bg-rose-500/15 px-1.5 py-0.5 text-[10px] text-rose-400 border border-rose-500/30">
+            <span className="flex items-center gap-1 rounded bg-rose-500/15 px-1.5 py-0.5 text-[10px] text-rose-700 dark:text-rose-400 border border-rose-500/30 font-semibold">
               <RefreshCw className="size-2.5" />
               {replanCount} re-plan
             </span>

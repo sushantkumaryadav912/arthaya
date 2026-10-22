@@ -57,12 +57,12 @@ export function AIResearchSummary({ summary }: { summary: Summary }) {
         </div>
 
         {summary.conflictingSignals.length > 0 && (
-          <div className="rounded-lg border border-warning/30 bg-warning-soft p-3">
-            <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-warning">
-              <GitCompareArrows className="size-3.5" />
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
+            <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-amber-900 dark:text-amber-200">
+              <GitCompareArrows className="size-3.5 text-amber-600 dark:text-amber-400" />
               Conflicting signals
             </p>
-            <ul className="space-y-0.5 text-xs text-warning/90">
+            <ul className="space-y-0.5 text-xs text-amber-950 dark:text-amber-100 font-medium">
               {summary.conflictingSignals.map((c) => (
                 <li key={c}>· {c}</li>
               ))}

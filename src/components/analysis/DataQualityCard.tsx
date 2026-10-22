@@ -97,10 +97,10 @@ export function DataQualityCard({ critic }: { critic: CriticValidation }) {
         )}
 
         {flags.length > 0 && (
-          <div className="space-y-1 rounded-lg border border-warning/30 bg-warning-soft p-3">
+          <div className="space-y-1 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
             {flags.map((n) => (
-              <p key={n} className="flex items-start gap-1.5 text-xs text-warning">
-                <AlertTriangle className="mt-0.5 size-3 shrink-0" />
+              <p key={n} className="flex items-start gap-1.5 text-xs text-amber-900 dark:text-amber-200 font-medium">
+                <AlertTriangle className="mt-0.5 size-3 shrink-0 text-amber-600 dark:text-amber-400" />
                 {n}
               </p>
             ))}
