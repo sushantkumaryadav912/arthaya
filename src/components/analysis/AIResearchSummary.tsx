@@ -1,10 +1,18 @@
-import { AlertTriangle, GitCompareArrows, Sparkles } from "lucide-react";
+import { AlertTriangle, Cpu, GitCompareArrows, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProvenanceTag } from "@/components/common/ProvenanceTag";
 import { ConfidenceIndicator } from "./ConfidenceIndicator";
 import { SignalCard } from "./SignalCard";
 import { ProbabilityBar } from "@/components/charts/ProbabilityBar";
 import type { AIResearchSummary as Summary } from "@/lib/types";
+
+const GATEWAY_NAMES: Record<string, string> = {
+  claude: "Claude 3.5 Sonnet (Anthropic)",
+  gemini: "Gemini 1.5 Pro (Google)",
+  mistral: "Mistral Large (Mistral AI)",
+  groq: "Groq Llama-3 (Fast LPUs)",
+  openrouter: "OpenRouter Auto Gateway",
+};
 
 const VIEWS: { key: keyof Summary; label: string }[] = [
   { key: "marketContext", label: "Market context" },
@@ -16,15 +24,40 @@ const VIEWS: { key: keyof Summary; label: string }[] = [
 ];
 
 /** Synthesis-agent research summary. AI-generated interpretation — not investment advice. */
-export function AIResearchSummary({ summary }: { summary: Summary }) {
+export function AIResearchSummary({
+  summary,
+  modelGateway,
+}: {
+  summary: Summary;
+  modelGateway?: string;
+}) {
+  const gatewayName = modelGateway
+    ? GATEWAY_NAMES[modelGateway.toLowerCase()] || modelGateway.toUpperCase()
+    : null;
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-start justify-between gap-3">
-        <CardTitle className="flex items-center gap-2">
-          <Sparkles className="size-4 text-accent" />
-          AI Research Summary
-        </CardTitle>
-        <ProvenanceTag kind="ai-interpretation" />
+        <div>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="size-4 text-accent" />
+            AI Research Summary
+          </CardTitle>
+          {gatewayName && (
+            <p className="mt-1 text-[11px] text-fg-subtle flex items-center gap-1.5 font-mono">
+              <Cpu className="size-3 text-accent" />
+              Synthesized via <strong className="text-accent">{gatewayName}</strong>
+            </p>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {modelGateway && (
+            <span className="rounded-full bg-accent/15 px-2.5 py-0.5 text-[10px] font-semibold text-accent border border-accent/25 uppercase font-mono">
+              {modelGateway}
+            </span>
+          )}
+          <ProvenanceTag kind="ai-interpretation" />
+        </div>
       </CardHeader>
       <CardContent className="space-y-5">
         <div className="grid gap-4 sm:grid-cols-2">

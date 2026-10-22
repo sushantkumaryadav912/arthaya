@@ -239,13 +239,22 @@ export function buildMultiAgentExecutionPlan(
     });
   }
 
+  const gatewayLabels: Record<string, string> = {
+    claude: "Claude 3.5 Sonnet (Anthropic)",
+    gemini: "Gemini 1.5 Pro (Google DeepMind)",
+    mistral: "Mistral Large (Mistral AI)",
+    groq: "Groq Llama-3 (Fast LPUs)",
+    openrouter: "OpenRouter Auto Gateway",
+  };
+  const activeGatewayLabel = gatewayLabels[modelGateway.toLowerCase()] || modelGateway.toUpperCase();
+
   // 11. SYNTHESIS AGENT: Multi-Agent Consensus Brief
   steps.push({
     agent: "synthesis",
     phase: "synthesis",
-    toolName: `LLMSynthesisDossier (${modelGateway.toUpperCase()})`,
-    message: `Synthesized final research dossier with full provenance across all 8 upstream agent contributions.`,
-    payloadSummary: `Overall consensus: ${finalDirection} (${Math.round(finalProb * 100)}% probability) over ${horizonDays} trading days.`,
+    toolName: `LLMSynthesisDossier [${modelGateway.toUpperCase()}]`,
+    message: `Synthesized final research dossier via ${activeGatewayLabel} with verified provenance across all 8 upstream agent contributions.`,
+    payloadSummary: `Overall consensus: ${finalDirection} (${Math.round(finalProb * 100)}% probability) over ${horizonDays} trading days via ${activeGatewayLabel}.`,
     delayMs: 360,
   });
 
