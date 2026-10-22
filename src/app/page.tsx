@@ -37,9 +37,12 @@ import {
   TrendingDown,
   TrendingUp,
   Zap,
+  LogOut,
+  User as UserIcon,
 } from "lucide-react";
 import { AGENT_PIPELINE } from "@/lib/constants/agents";
 import { cn } from "@/lib/utils/cn";
+import { authService, type AuthUser } from "@/services/authService";
 
 // Agent detail metadata for the interactive showcase
 const AGENT_SPEC_DETAILS: Record<
@@ -206,6 +209,7 @@ export default function HomePage() {
   const [openFaq, setOpenFaq] = React.useState<number | null>(0);
   const [isLight, setIsLight] = React.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [currentUser, setCurrentUser] = React.useState<AuthUser | null>(null);
 
   // Initialize theme
   React.useEffect(() => {
@@ -214,6 +218,27 @@ export default function HomePage() {
     setIsLight(lightMode);
     document.documentElement.classList.toggle("light", lightMode);
   }, []);
+
+  // Validate JWT session with backend
+  React.useEffect(() => {
+    let mounted = true;
+    authService.getCurrentUser().then((u) => {
+      if (mounted && u) setCurrentUser(u);
+    });
+    authService.validateToken().then((res) => {
+      if (mounted) {
+        setCurrentUser(res.authorized ? res.user : null);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    await authService.signOut();
+    setCurrentUser(null);
+  };
 
   const toggleTheme = () => {
     const next = !isLight;
@@ -283,7 +308,7 @@ export default function HomePage() {
             </a>
           </nav>
 
-          {/* Actions: Theme Toggle & Launch Button */}
+          {/* Actions: Theme Toggle, Auth Status & Dashboard Button */}
           <div className="flex items-center gap-3">
             <button
               onClick={toggleTheme}
@@ -292,6 +317,31 @@ export default function HomePage() {
             >
               {isLight ? <Moon className="size-4" /> : <Sun className="size-4" />}
             </button>
+
+            {currentUser ? (
+              <>
+                <div className="hidden sm:flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 px-2.5 py-1.5 text-xs text-accent">
+                  <span className="size-2 rounded-full bg-accent animate-pulse" />
+                  <span className="font-medium max-w-[120px] truncate">
+                    {currentUser.name || currentUser.email}
+                  </span>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-medium text-fg-muted hover:text-red-400 hover:border-red-500/40 hover:bg-elevated transition-colors"
+                >
+                  <LogOut className="size-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login?next=/dashboard"
+                className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-medium text-fg-muted hover:text-accent hover:border-accent/40 hover:bg-elevated transition-colors"
+              >
+                <span>Sign In</span>
+              </Link>
+            )}
 
             <Link
               href="/dashboard"
@@ -354,9 +404,26 @@ export default function HomePage() {
             >
               FAQ
             </a>
-            <div className="pt-2 border-t border-border">
+            <div className="pt-2 border-t border-border space-y-2">
+              {currentUser ? (
+                <div className="flex items-center justify-between py-1 text-xs text-accent">
+                  <span>Signed in as {currentUser.name || currentUser.email}</span>
+                  <button onClick={handleLogout} className="text-red-400 underline">
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/login?next=/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-center rounded-lg border border-border py-2 text-xs font-semibold text-fg"
+                >
+                  Sign In
+                </Link>
+              )}
               <Link
                 href="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-center gap-2 rounded-lg bg-accent py-2 text-xs font-semibold text-bg"
               >
                 <span>Enter Dashboard</span>
