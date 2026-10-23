@@ -22,7 +22,7 @@ interface BackendStockResponse {
   [key: string]: unknown;
 }
 
-import { fetchLiveQuote, searchLiveStocks } from "@/lib/services/liveMarketService";
+import { fetchLiveQuote, searchLiveStocks, fetchLiveStockSummaries } from "@/lib/services/liveMarketService";
 import { findSeed } from "@/lib/mock/stocks";
 
 export async function searchStocks(q: string): Promise<StockSummary[]> {
@@ -44,8 +44,6 @@ export async function searchStocks(q: string): Promise<StockSummary[]> {
   // 3. Dynamic seed so the user can ALWAYS search their preference
   return [toSummary(findSeed(query))];
 }
-
-import { fetchLiveQuote, searchLiveStocks, fetchLiveStockSummaries } from "@/lib/services/liveMarketService";
 
 export async function listStocks(): Promise<StockSummary[]> {
   // 1. Try authentic real-time live market summaries
