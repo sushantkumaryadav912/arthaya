@@ -9,7 +9,7 @@ import { isDemoSession } from "@/lib/utils/env";
 const LABELS: Record<Provenance, string> = {
   "market-data": "Market data",
   calculated: "Calculated",
-  "ml-prediction": "ML prediction",
+  "ml-prediction": "Quant ML (Active)",
   "ai-interpretation": "AI-generated interpretation",
   backtest: "Backtested",
   demo: "Demo data",
@@ -18,7 +18,7 @@ const LABELS: Record<Provenance, string> = {
 const TONE: Record<Provenance, string> = {
   "market-data": "text-fg-muted border-border-strong",
   calculated: "text-fg-muted border-border-strong",
-  "ml-prediction": "text-fg-muted border-border-strong",
+  "ml-prediction": "text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
   "ai-interpretation": "text-warning border-warning/30",
   backtest: "text-fg-muted border-border-strong",
   demo: "text-warning border-warning/30",

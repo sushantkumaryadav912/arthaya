@@ -29,6 +29,8 @@ export const UNIVERSE: Seed[] = [
   { ticker: "TCS", name: "Tata Consultancy Services Ltd.", exchange: "NSE", currency: "INR", base: 4120, sector: "IT Services" },
   { ticker: "INFY", name: "Infosys Ltd.", exchange: "NSE", currency: "INR", base: 1880, sector: "IT Services" },
   { ticker: "HDFCBANK", name: "HDFC Bank Ltd.", exchange: "NSE", currency: "INR", base: 1685, sector: "Banking" },
+  { ticker: "M&M", name: "Mahindra & Mahindra Ltd.", exchange: "NSE", currency: "INR", base: 2840, sector: "Automotive" },
+  { ticker: "TATAMOTORS", name: "Tata Motors Ltd.", exchange: "NSE", currency: "INR", base: 890, sector: "Automotive" },
 ];
 
 export function findSeed(ticker: string): Seed {
@@ -41,7 +43,7 @@ export function findSeed(ticker: string): Seed {
   const isIndian =
     normalized.endsWith(".NS") ||
     normalized.endsWith(".BO") ||
-    ["TCS", "INFY", "WIPRO", "ITC", "SBIN", "BHARTIARTL", "KOTAKBANK"].includes(normalized);
+    ["TCS", "INFY", "WIPRO", "ITC", "SBIN", "BHARTIARTL", "KOTAKBANK", "M&M", "TATAMOTORS", "BAJFINANCE"].includes(normalized);
 
   const basePrice = isIndian ? round(500 + rand() * 3500, 2) : round(25 + rand() * 480, 2);
   const sectors = [

@@ -3,7 +3,7 @@ import type { AnalysisDepth, AnalysisHorizon } from "@/lib/types";
 const VALID_HORIZONS: AnalysisHorizon[] = ["1D", "5D", "20D"];
 const VALID_DEPTHS: AnalysisDepth[] = ["quick", "standard", "deep"];
 
-const TICKER_PATTERN = /^[A-Z0-9.\-^=]{1,15}$/;
+const TICKER_PATTERN = /^[A-Z0-9.\-^=&_]{1,20}$/;
 
 export function validateAnalysisInput(
   tickerInput: string,
