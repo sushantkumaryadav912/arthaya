@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { allSummaries, searchUniverse, toSummary } from "@/lib/mock/stocks";
-import { searchLiveStocks } from "@/lib/services/liveMarketService";
+import { searchLiveStocks, fetchLiveStockSummaries } from "@/lib/services/liveMarketService";
 import { ok } from "@/app/api/v1/_lib/respond";
 
 export async function GET(req: NextRequest) {
@@ -14,5 +14,13 @@ export async function GET(req: NextRequest) {
     }
     return ok(searchUniverse(q).map(toSummary));
   }
+
+  try {
+    const liveList = await fetchLiveStockSummaries();
+    if (liveList.length > 0) return ok(liveList);
+  } catch {
+    // fallback
+  }
+
   return ok(allSummaries());
 }

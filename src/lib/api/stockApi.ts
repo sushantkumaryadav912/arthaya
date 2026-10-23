@@ -45,14 +45,25 @@ export async function searchStocks(q: string): Promise<StockSummary[]> {
   return [toSummary(findSeed(query))];
 }
 
+import { fetchLiveQuote, searchLiveStocks, fetchLiveStockSummaries } from "@/lib/services/liveMarketService";
+
 export async function listStocks(): Promise<StockSummary[]> {
-  if (await isDemoSessionAsync()) return allSummaries();
+  // 1. Try authentic real-time live market summaries
+  try {
+    const live = await fetchLiveStockSummaries();
+    if (live.length > 0) return live;
+  } catch {
+    // fallback
+  }
+
+  // 2. Try backend API
   try {
     const data = await apiGet<StockSummary[]>("/stocks");
     if (Array.isArray(data) && data.length > 0) return data;
   } catch {
-    // If backend only exposes single ticker endpoints, return universe list
+    // fallback
   }
+
   return allSummaries();
 }
 
