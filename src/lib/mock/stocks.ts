@@ -19,18 +19,19 @@ interface Seed {
 
 /** Demo universe (project.md search examples). */
 export const UNIVERSE: Seed[] = [
-  { ticker: "AAPL", name: "Apple Inc.", exchange: "NASDAQ", currency: "USD", base: 228, sector: "Technology" },
-  { ticker: "MSFT", name: "Microsoft Corporation", exchange: "NASDAQ", currency: "USD", base: 421, sector: "Technology" },
-  { ticker: "NVDA", name: "NVIDIA Corporation", exchange: "NASDAQ", currency: "USD", base: 134, sector: "Semiconductors" },
-  { ticker: "TSLA", name: "Tesla, Inc.", exchange: "NASDAQ", currency: "USD", base: 248, sector: "Automotive" },
-  { ticker: "AMZN", name: "Amazon.com, Inc.", exchange: "NASDAQ", currency: "USD", base: 186, sector: "Consumer" },
-  { ticker: "GOOGL", name: "Alphabet Inc.", exchange: "NASDAQ", currency: "USD", base: 168, sector: "Technology" },
-  { ticker: "RELIANCE", name: "Reliance Industries Ltd.", exchange: "NSE", currency: "INR", base: 2950, sector: "Conglomerate" },
-  { ticker: "TCS", name: "Tata Consultancy Services Ltd.", exchange: "NSE", currency: "INR", base: 4120, sector: "IT Services" },
-  { ticker: "INFY", name: "Infosys Ltd.", exchange: "NSE", currency: "INR", base: 1880, sector: "IT Services" },
-  { ticker: "HDFCBANK", name: "HDFC Bank Ltd.", exchange: "NSE", currency: "INR", base: 1685, sector: "Banking" },
-  { ticker: "M&M", name: "Mahindra & Mahindra Ltd.", exchange: "NSE", currency: "INR", base: 2835, sector: "Automotive" },
-  { ticker: "TATAMOTORS", name: "Tata Motors Ltd.", exchange: "NSE", currency: "INR", base: 890, sector: "Automotive" },
+  { ticker: "M&M", name: "Mahindra & Mahindra Ltd.", exchange: "NSE", currency: "INR", base: 2824.90, sector: "Automotive" },
+  { ticker: "RELIANCE", name: "Reliance Industries Ltd.", exchange: "NSE", currency: "INR", base: 1186.20, sector: "Conglomerate" },
+  { ticker: "TCS", name: "Tata Consultancy Services Ltd.", exchange: "NSE", currency: "INR", base: 2532.40, sector: "IT Services" },
+  { ticker: "INFY", name: "Infosys Ltd.", exchange: "NSE", currency: "INR", base: 1158.35, sector: "IT Services" },
+  { ticker: "HDFCBANK", name: "HDFC Bank Ltd.", exchange: "NSE", currency: "INR", base: 695.30, sector: "Banking" },
+  { ticker: "TATAMOTORS", name: "Tata Motors Ltd.", exchange: "NSE", currency: "INR", base: 890.00, sector: "Automotive" },
+  { ticker: "AAPL", name: "Apple Inc.", exchange: "NASDAQ", currency: "USD", base: 348.22, sector: "Technology" },
+  { ticker: "MSFT", name: "Microsoft Corporation", exchange: "NASDAQ", currency: "USD", base: 521.08, sector: "Technology" },
+  { ticker: "NVDA", name: "NVIDIA Corporation", exchange: "NASDAQ", currency: "USD", base: 212.21, sector: "Semiconductors" },
+  { ticker: "TSLA", name: "Tesla, Inc.", exchange: "NASDAQ", currency: "USD", base: 374.58, sector: "Automotive" },
+  { ticker: "AMZN", name: "Amazon.com, Inc.", exchange: "NASDAQ", currency: "USD", base: 250.38, sector: "Consumer" },
+  { ticker: "GOOGL", name: "Alphabet Inc.", exchange: "NASDAQ", currency: "USD", base: 324.22, sector: "Technology" },
+  { ticker: "META", name: "Meta Platforms, Inc.", exchange: "NASDAQ", currency: "USD", base: 648.85, sector: "Technology" },
 ];
 
 export function findSeed(ticker: string): Seed {
@@ -78,12 +79,11 @@ export function searchUniverse(q: string): Seed[] {
 }
 
 function dailyChange(seed: Seed): { price: number; change: number; pct: number } {
-  const series = priceSeries(seed.ticker, 2, seed.base);
-  const prev = series[0];
-  const price = series[1];
-  const change = round(price - prev);
-  const pct = round((change / prev) * 100);
-  return { price: round(price), change, pct };
+  const price = seed.base;
+  const rand = mulberry32(seedFrom(seed.ticker + "daily"));
+  const pct = round((rand() - 0.48) * 2.2, 2);
+  const change = round((price * pct) / 100, 2);
+  return { price, change, pct };
 }
 
 export function toSummary(seed: Seed): StockSummary {
