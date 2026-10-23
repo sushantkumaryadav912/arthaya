@@ -2,11 +2,11 @@
 "use client";
 
 import * as React from "react";
-import { DEFAULT_WATCHLIST } from "@/lib/api/watchlistApi";
+import { DEFAULT_WATCHLIST, addToWatchlist, removeFromWatchlist } from "@/lib/api/watchlistApi";
 
 const KEY = "arthaya:watchlist";
 
-/** LocalStorage-backed watchlist with client-side persistence. */
+/** LocalStorage-backed watchlist with client-side persistence and backend synchronization. */
 export function useWatchlist() {
   const [tickers, setTickers] = React.useState<string[]>(DEFAULT_WATCHLIST);
   const [hydrated, setHydrated] = React.useState(false);
@@ -41,7 +41,30 @@ export function useWatchlist() {
       setHydrated(true);
     });
 
-    return () => window.cancelAnimationFrame(frame);
+    const handleUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<string[]>;
+      if (Array.isArray(customEvent.detail)) {
+        setTickers(customEvent.detail);
+      }
+    };
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === KEY && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setTickers(parsed);
+        } catch {}
+      }
+    };
+
+    window.addEventListener("arthaya:watchlist_updated", handleUpdate);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("arthaya:watchlist_updated", handleUpdate);
+      window.removeEventListener("storage", handleStorage);
+    };
   }, []);
 
   const persist = React.useCallback((next: string[]) => {
@@ -49,13 +72,15 @@ export function useWatchlist() {
 
     try {
       window.localStorage.setItem(KEY, JSON.stringify(next));
+      window.dispatchEvent(new CustomEvent("arthaya:watchlist_updated", { detail: next }));
     } catch {
       // Ignore unavailable storage.
     }
   }, []);
 
   const add = React.useCallback((ticker: string) => {
-    const normalized = ticker.toUpperCase();
+    const normalized = ticker.trim().toUpperCase();
+    if (!normalized) return;
 
     setTickers((previous) => {
       if (previous.includes(normalized)) {
@@ -66,28 +91,35 @@ export function useWatchlist() {
 
       try {
         window.localStorage.setItem(KEY, JSON.stringify(next));
+        window.dispatchEvent(new CustomEvent("arthaya:watchlist_updated", { detail: next }));
       } catch {
         // Ignore unavailable storage.
       }
 
       return next;
     });
+
+    addToWatchlist(normalized).catch(() => {});
   }, []);
 
   const remove = React.useCallback((ticker: string) => {
-    const normalized = ticker.toUpperCase();
+    const normalized = ticker.trim().toUpperCase();
+    if (!normalized) return;
 
     setTickers((previous) => {
       const next = previous.filter((item) => item !== normalized);
 
       try {
         window.localStorage.setItem(KEY, JSON.stringify(next));
+        window.dispatchEvent(new CustomEvent("arthaya:watchlist_updated", { detail: next }));
       } catch {
         // Ignore unavailable storage.
       }
 
       return next;
     });
+
+    removeFromWatchlist(normalized).catch(() => {});
   }, []);
 
   const has = React.useCallback(
