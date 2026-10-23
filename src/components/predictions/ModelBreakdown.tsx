@@ -3,7 +3,8 @@ import { ProvenanceTag } from "@/components/common/ProvenanceTag";
 import type { ModelVote } from "@/lib/types";
 
 /** Per-model vote breakdown feeding the ensemble. */
-export function ModelBreakdown({ votes }: { votes: ModelVote[] }) {
+export function ModelBreakdown({ votes }: { votes?: ModelVote[] }) {
+  const list = Array.isArray(votes) ? votes : [];
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -11,7 +12,7 @@ export function ModelBreakdown({ votes }: { votes: ModelVote[] }) {
         <ProvenanceTag kind="ml-prediction" />
       </div>
       <div className="space-y-3">
-        {votes.map((v) => (
+        {list.map((v) => (
           <ProbabilityBar
             key={v.model}
             label={`${v.model} — ${v.direction}`}

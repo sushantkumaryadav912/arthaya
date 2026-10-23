@@ -240,22 +240,12 @@ export function useAnalysisStream() {
       setError(null);
 
       const analysisId = `ana_${Date.now()}`;
-      // Direct stream URL on Render backend
-      const backendUrl = `${API_BASE}${API_PREFIX}/analysis/${analysisId}/stream?ticker=${encodeURIComponent(
+      // Prefer same-origin SSE stream route for maximum reliability and zero CORS issues
+      const localStreamUrl = `/api/v1/analysis/stream?ticker=${encodeURIComponent(
         ticker,
       )}&horizon=${horizon}&depth=${depth}&gateway=${encodeURIComponent(gateway ?? "claude")}`;
 
-      let es: EventSource;
-      try {
-        es = new EventSource(backendUrl);
-      } catch {
-        // Fallback to local route handler
-        es = new EventSource(
-          `/api/v1/analysis/stream?ticker=${encodeURIComponent(
-            ticker,
-          )}&horizon=${horizon}&depth=${depth}&gateway=${encodeURIComponent(gateway ?? "claude")}`,
-        );
-      }
+      const es = new EventSource(localStreamUrl);
       esRef.current = es;
 
       es.onmessage = (e) => {

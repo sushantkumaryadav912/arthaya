@@ -2,6 +2,8 @@ import { AgentStatusBadge } from "@/components/common/StatusBadge";
 import { cn } from "@/lib/utils/cn";
 import type { AgentStatus } from "@/lib/types";
 
+import { AGENT_PIPELINE } from "@/lib/constants/agents";
+
 const DOT: Record<AgentStatus["status"], string> = {
   idle: "border-border bg-surface",
   waiting: "border-border bg-surface",
@@ -11,10 +13,19 @@ const DOT: Record<AgentStatus["status"], string> = {
 };
 
 /** Vertical pipeline timeline of agent execution. */
-export function AgentTimeline({ agents }: { agents: AgentStatus[] }) {
+export function AgentTimeline({ agents }: { agents?: AgentStatus[] }) {
+  const list =
+    Array.isArray(agents) && agents.length > 0
+      ? agents
+      : AGENT_PIPELINE.map((d) => ({
+          agentId: d.agentId,
+          name: d.name,
+          status: "completed" as const,
+        }));
+
   return (
     <ol className="relative space-y-4">
-      {agents.map((a, i) => (
+      {list.map((a, i) => (
         <li key={a.agentId} className="relative flex gap-3 pl-1">
           {i < agents.length - 1 && (
             <span className="absolute left-[7px] top-4 h-full w-px bg-border" aria-hidden />

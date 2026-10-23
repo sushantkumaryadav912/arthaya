@@ -15,7 +15,8 @@ const DIR = {
 
 /** Prediction summary card. Always labels probability as model probability. */
 export function PredictionCard({ prediction, href }: { prediction: Prediction; href?: string }) {
-  const d = DIR[prediction.direction];
+  const rawDir = (prediction?.direction || "UP").toString().toUpperCase() as "UP" | "DOWN" | "NEUTRAL";
+  const d = DIR[rawDir] || DIR.UP;
   const Icon = d.icon;
   const body = (
     <Card className="h-full transition-colors hover:border-border-strong">

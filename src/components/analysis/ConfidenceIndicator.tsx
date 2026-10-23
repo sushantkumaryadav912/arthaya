@@ -13,10 +13,11 @@ export function ConfidenceIndicator({
   confidence,
   className,
 }: {
-  confidence: ConfidenceLabel;
+  confidence: ConfidenceLabel | string;
   className?: string;
 }) {
-  const l = LEVEL[confidence];
+  const normConf = (confidence === "Medium" ? "Medium-High" : confidence) as ConfidenceLabel;
+  const l = LEVEL[normConf] || LEVEL["Medium-High"];
   return (
     <div className={cn("space-y-1.5", className)}>
       <div className="flex items-center justify-between">

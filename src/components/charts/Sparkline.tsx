@@ -18,8 +18,9 @@ export function Sparkline({
       : tone === "negative"
         ? "var(--color-negative)"
         : "var(--color-accent)";
-  const chartData = data.map((v, i) => ({ i, v }));
-  const id = `spark-${tone}-${data.length}`;
+  const points = Array.isArray(data) && data.length > 0 ? data : [0, 0];
+  const chartData = points.map((v, i) => ({ i, v }));
+  const id = `spark-${tone}-${points.length}`;
   return (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={chartData} margin={{ top: 2, bottom: 2, left: 0, right: 0 }}>

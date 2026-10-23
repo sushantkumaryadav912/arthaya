@@ -54,8 +54,9 @@ export async function signJwt(
   const secret = getSecretKey();
   const now = Math.floor(Date.now() / 1000);
 
-  const fullPayload: JwtPayload = {
+  const fullPayload: JwtPayload & { iss: string } = {
     ...payload,
+    iss: "arthaya",
     iat: now,
     exp: now + expiresInSeconds,
   };

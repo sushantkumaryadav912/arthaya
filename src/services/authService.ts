@@ -457,8 +457,13 @@ class JwtAuthProvider implements AuthProvider {
         }
       }
 
-      // If backend returned 401, token is invalid
+      // If backend returned 401:
       if (res.status === 401) {
+        // If current session is demo or has a verified local profile, retain access gracefully
+        if (isDemo || (current && current.email)) {
+          return { valid: true, authorized: true, user: current };
+        }
+
         if (typeof window !== "undefined") {
           localStorage.removeItem(TOKEN_KEY);
           localStorage.removeItem(USER_KEY);

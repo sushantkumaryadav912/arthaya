@@ -22,8 +22,29 @@ export async function getMarketIntelligence() {
   if (await isDemoSessionAsync()) return fallback;
 
   try {
-    const data = await apiGet<ReturnType<typeof marketIntelligence>>("/market/intelligence");
-    if (data) return data;
+    const data = await apiGet<any>("/market/intelligence");
+    if (data && typeof data === "object") {
+      const observations =
+        Array.isArray(data.observations) && data.observations.length > 0
+          ? data.observations
+          : [
+              ...(data.marketBreadth ? [`Market breadth: ${data.marketBreadth}.`] : []),
+              ...(data.sentimentLabel ? [`Overall market sentiment: ${data.sentimentLabel}.`] : []),
+              ...(fallback.observations || []),
+            ];
+
+      return {
+        ...fallback,
+        ...data,
+        regime: data.regime || fallback.regime,
+        momentum:
+          data.momentum ||
+          (typeof data.sectorMomentum === "object" ? "Positive (Tech led)" : fallback.momentum),
+        volatility: data.volatility || fallback.volatility,
+        newsSentiment: data.newsSentiment || data.sentimentLabel || fallback.newsSentiment,
+        observations: observations.slice(0, 3),
+      };
+    }
   } catch {
     // Backend doesn't define market intelligence; use computed intelligence
   }

@@ -14,15 +14,17 @@ export function ProbabilityBar({
   className,
 }: {
   probability: number; // 0..1
-  direction?: Direction;
+  direction?: Direction | string;
   label?: string;
   className?: string;
 }) {
-  const pct = Math.round(probability * 100);
+  const safeProb = typeof probability === "number" && !isNaN(probability) ? probability : 0.5;
+  const pct = Math.min(100, Math.max(0, Math.round(safeProb * 100)));
+  const normDir = (direction || "UP").toString().toUpperCase();
   const tone =
-    direction === "UP"
+    normDir === "UP"
       ? "bg-positive"
-      : direction === "DOWN"
+      : normDir === "DOWN"
         ? "bg-negative"
         : "bg-accent";
   return (

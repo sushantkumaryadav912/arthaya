@@ -112,7 +112,7 @@ export default async function DashboardPage() {
                 <Stat label="News" value={intel.newsSentiment} />
               </div>
               <ul className="space-y-1.5 border-t border-border pt-3">
-                {intel.observations.map((o, i) => (
+                {(intel?.observations || []).map((o, i) => (
                   <li key={i} className="flex gap-2 text-xs text-fg-muted">
                     <span className="mt-1.5 size-1 shrink-0 rounded-full bg-accent" />
                     {o}
@@ -140,7 +140,7 @@ export default async function DashboardPage() {
           }
         />
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {reports.slice(0, 3).map((r) => (
+          {(reports || []).slice(0, 3).map((r) => (
             <Link key={r.id} href={`/reports/${r.id}`}>
               <Card className="transition-colors hover:border-border-strong">
                 <CardContent className="flex items-center justify-between gap-3 py-4">
@@ -174,7 +174,7 @@ export default async function DashboardPage() {
           }
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {predictions.slice(0, 4).map((p) => (
+          {(predictions || []).slice(0, 4).map((p) => (
             <PredictionCard key={p.ticker} prediction={p} href={`/stocks/${p.ticker}/prediction`} />
           ))}
         </div>
