@@ -14,20 +14,21 @@ const DOT: Record<AgentStatus["status"], string> = {
 
 /** Vertical pipeline timeline of agent execution. */
 export function AgentTimeline({ agents }: { agents?: AgentStatus[] }) {
-  const list =
+  const list: AgentStatus[] =
     Array.isArray(agents) && agents.length > 0
       ? agents
       : AGENT_PIPELINE.map((d) => ({
           agentId: d.agentId,
           name: d.name,
           status: "completed" as const,
+          executionMs: 400,
         }));
 
   return (
     <ol className="relative space-y-4">
       {list.map((a, i) => (
         <li key={a.agentId} className="relative flex gap-3 pl-1">
-          {i < agents.length - 1 && (
+          {i < list.length - 1 && (
             <span className="absolute left-[7px] top-4 h-full w-px bg-border" aria-hidden />
           )}
           <span

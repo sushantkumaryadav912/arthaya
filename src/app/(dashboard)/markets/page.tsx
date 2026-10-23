@@ -71,7 +71,7 @@ export default async function MarketsPage() {
               <Stat label="News" value={intel.newsSentiment} />
             </div>
             <ul className="space-y-1.5 border-t border-border pt-3">
-              {intel.observations.map((o, i) => (
+              {(intel.observations || []).map((o: string, i: number) => (
                 <li key={i} className="flex gap-2 text-xs text-fg-muted">
                   <span className="mt-1 size-1 shrink-0 rounded-full bg-accent" />
                   {o}
