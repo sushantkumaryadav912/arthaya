@@ -414,6 +414,9 @@ class JwtAuthProvider implements AuthProvider {
       return { valid: false, authorized: false, user: null };
     }
 
+    const current = await this.getCurrentUser();
+    const isDemo = current?.isDemo ?? (current?.email?.toLowerCase() === DEMO_EMAIL);
+
     try {
       // Validate directly against backend /api/v1/auth/me
       const res = await fetch(`${API_BASE}${API_PREFIX}/auth/me`, {
@@ -428,9 +431,6 @@ class JwtAuthProvider implements AuthProvider {
       if (res.ok) {
         const data = await res.json();
         if (data.authenticated && data.user) {
-          const current = await this.getCurrentUser();
-          const isDemo = current?.isDemo ?? (current?.email?.toLowerCase() === DEMO_EMAIL);
-
           const merged: AuthUser = {
             ...(data.user || {}),
             ...(current || {}),
