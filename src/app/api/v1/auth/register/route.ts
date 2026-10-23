@@ -7,6 +7,11 @@ const BACKEND_URL =
   process.env.BACKEND_URL ||
   "https://arthaya-backend-1xdm.onrender.com";
 
+const FIREBASE_API_KEY =
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY ||
+  process.env.FIREBASE_API_KEY ||
+  "AIzaSyDsF-LjOVyViriY4CL1sAAWJFBgAwtc37E";
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -47,7 +52,64 @@ export async function POST(req: NextRequest) {
     const userRole = typeof role === "string" && role.trim() ? role.trim() : "Quantitative Analyst";
     const normalizedEmail = email.trim().toLowerCase();
 
-    // 1. Register user on live Render backend
+    // 1. Register user directly in Firebase Auth in real time
+    const fbSignUpUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`;
+    let fbRes: Response;
+    try {
+      fbRes = await fetch(fbSignUpUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: normalizedEmail,
+          password,
+          returnSecureToken: true,
+        }),
+      });
+    } catch (networkErr) {
+      console.error("Firebase network registration error:", networkErr);
+      return NextResponse.json(
+        { error: "Registration service temporarily unreachable. Please try again." },
+        { status: 503 },
+      );
+    }
+
+    const fbData = await fbRes.json().catch(() => ({}));
+
+    if (!fbRes.ok || !fbData.idToken) {
+      const errCode = fbData?.error?.message || "";
+      let errorMsg = "Failed to register account with Firebase.";
+      if (errCode.includes("EMAIL_EXISTS")) {
+        errorMsg = "An account with this email address already exists. Please sign in.";
+      } else if (errCode.includes("WEAK_PASSWORD")) {
+        errorMsg = "Password must be at least 6 characters long.";
+      } else if (errCode.includes("INVALID_EMAIL")) {
+        errorMsg = "Please provide a valid email address.";
+      }
+      return NextResponse.json({ error: errorMsg }, { status: 400 });
+    }
+
+    // Set display name in Firebase Auth
+    const firebaseUid = fbData.localId;
+    if (displayName) {
+      try {
+        const fbUpdateUrl = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FIREBASE_API_KEY}`;
+        await fetch(fbUpdateUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            idToken: fbData.idToken,
+            displayName,
+            returnSecureToken: true,
+          }),
+        });
+      } catch (upErr) {
+        console.warn("Failed to set Firebase displayName:", upErr);
+      }
+    }
+
+    // 2. Optionally sync profile with backend database
+    let appToken: string | null = null;
+    let backendUser: any = null;
     try {
       const backendRes = await fetch(`${BACKEND_URL}/api/v1/auth/register`, {
         method: "POST",
@@ -61,65 +123,67 @@ export async function POST(req: NextRequest) {
         }),
       });
 
-      if (!backendRes.ok) {
-        const errorData = await backendRes.json().catch(() => ({}));
-        return NextResponse.json(
-          { error: errorData.detail || errorData.error || "Registration failed on backend." },
-          { status: backendRes.status || 400 },
-        );
+      if (backendRes.ok) {
+        const backendData = await backendRes.json();
+        appToken = backendData.access_token;
+        backendUser = backendData.user;
       }
+    } catch (backendErr) {
+      console.warn("Backend register sync notice:", backendErr);
+    }
 
-      const backendData = await backendRes.json();
-      const token = backendData.access_token;
-      const user = {
-        ...(backendData.user || {}),
-        id: backendData.user?.id || `usr_${Buffer.from(normalizedEmail).toString("hex").slice(0, 10)}`,
+    if (!appToken) {
+      appToken = await signJwt({
+        sub: firebaseUid,
         email: normalizedEmail,
         name: displayName,
         role: userRole,
-        organization: organization || "Institutional",
-        marketFocus: marketFocus || "US Equities",
-        horizon: horizon || "5D",
-        phone: phone || "",
-        aumRange: aumRange || "",
-        isDemo: false,
-      };
-
-      const response = NextResponse.json({
-        success: true,
-        token,
-        user,
-        message: "Account registered and authenticated on live backend.",
       });
-
-      response.cookies.set({
-        name: AUTH_COOKIE_NAME,
-        value: token,
-        httpOnly: false,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 7 * 24 * 3600,
-      });
-
-      response.cookies.set({
-        name: "arthaya_demo",
-        value: "false",
-        httpOnly: false,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 7 * 24 * 3600,
-      });
-
-      return response;
-    } catch (backendErr) {
-      console.warn("Backend register notice:", backendErr);
-      return NextResponse.json(
-        { error: "Backend service temporarily unavailable. Please try again in a few moments." },
-        { status: 503 },
-      );
     }
+
+    const user = {
+      ...(backendUser || {}),
+      id: firebaseUid,
+      email: normalizedEmail,
+      name: displayName,
+      role: userRole,
+      organization: organization || "Institutional",
+      marketFocus: marketFocus || "US Equities",
+      horizon: horizon || "5D",
+      phone: phone || "",
+      aumRange: aumRange || "",
+      provider: "firebase",
+      isDemo: false,
+    };
+
+    const response = NextResponse.json({
+      success: true,
+      token: appToken,
+      user,
+      message: "Account registered and authenticated in real-time via Firebase.",
+    });
+
+    response.cookies.set({
+      name: AUTH_COOKIE_NAME,
+      value: appToken,
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 7 * 24 * 3600,
+    });
+
+    response.cookies.set({
+      name: "arthaya_demo",
+      value: "false",
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 7 * 24 * 3600,
+    });
+
+    return response;
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Failed to register account." },

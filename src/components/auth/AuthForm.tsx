@@ -383,7 +383,7 @@ function AuthFormInner({ mode }: { mode: Mode }) {
               analyst@arthaya.ai / password123
             </p>
             <p className="mt-1 text-[10px] text-fg-subtle">
-              Demo credentials load mock data for testing. All other accounts (registered or OAuth) connect to the live backend.
+              Use demo credentials for instant analyst access. All other accounts are validated in real time via Firebase Auth.
             </p>
           </div>
         )}
