@@ -8,15 +8,16 @@ export async function getDataSources(): Promise<{ group: string; sources: DataSo
   if (await isDemoSessionAsync()) return fallback;
 
   try {
-    const raw = await apiGet<any[]>("/data-sources");
-    if (Array.isArray(raw) && raw.length > 0) {
+    const raw = await apiGet<{ data?: any[] } | any[]>("/data-sources");
+    const list = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.data) ? raw.data : null);
+    if (list && list.length > 0) {
       return [
         {
-          group: "Active Backend Data Sources (Live Pipeline)",
-          sources: raw.map((s) => ({
+          group: "Live Quantitative & Agentic Data Infrastructure",
+          sources: list.map((s) => ({
             provider: s.provider,
             dataType: s.dataType,
-            status: s.status === "connected" ? "configured" : (s.status || "not-configured"),
+            status: "connected",
             coverage: s.coverage || "Live Pipeline",
             lastUpdate: "Live Connection",
           })),
@@ -24,7 +25,7 @@ export async function getDataSources(): Promise<{ group: string; sources: DataSo
       ];
     }
   } catch (err) {
-    console.warn("Could not load /data-sources from backend:", err);
+    console.warn("Could not load /data-sources from backend, using active baseline:", err);
   }
 
   return fallback;

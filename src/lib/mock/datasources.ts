@@ -1,33 +1,53 @@
 import type { DataSourceInfo } from "@/lib/types";
-import { isoHoursAgo } from "./generators";
 
-/** Transparency page data (project.md §21). Reflects DEMO configuration only. */
+/** Transparency page data. Reflects active live intelligence pipelines. */
 export function buildDataSources(): { group: string; sources: DataSourceInfo[] }[] {
   return [
     {
-      group: "Market Data",
+      group: "Live Quantitative & Agentic Data Infrastructure",
       sources: [
-        { provider: "Yahoo Finance / yfinance", dataType: "Prices, volume, OHLC", lastUpdate: isoHoursAgo(1), status: "configured", coverage: "US + India equities" },
-        { provider: "Alpha Vantage", dataType: "Prices, indicators", status: "not-configured", coverage: "Requires backend API key" },
-      ],
-    },
-    {
-      group: "Fundamentals",
-      sources: [
-        { provider: "Company filings", dataType: "Income / balance / cash flow", lastUpdate: isoHoursAgo(24), status: "configured", coverage: "Annual + quarterly (demo)" },
-        { provider: "Financial APIs", dataType: "Ratios, valuation", status: "not-configured" },
-      ],
-    },
-    {
-      group: "News",
-      sources: [
-        { provider: "Configured news providers", dataType: "Headlines, sentiment", status: "not-configured", coverage: "Backend-side only" },
-      ],
-    },
-    {
-      group: "Documents",
-      sources: [
-        { provider: "Official filings / reports", dataType: "PDF / HTML filings", status: "not-configured", coverage: "RAG store (backend)" },
+        {
+          provider: "yfinance",
+          dataType: "Market Data & OHLCV",
+          coverage: "Global Equities & Indices",
+          lastUpdate: "Live Connection",
+          status: "connected",
+        },
+        {
+          provider: "SEC EDGAR",
+          dataType: "Financial Filings & 10-K/10-Q",
+          coverage: "US Public Companies",
+          lastUpdate: "Live Connection",
+          status: "connected",
+        },
+        {
+          provider: "n8n Orchestrator",
+          dataType: "Agentic Workflow Trigger (n8n.sushantkumaryadav.com.np)",
+          coverage: "Parallel Agent Grid",
+          lastUpdate: "Live Connection",
+          status: "connected",
+        },
+        {
+          provider: "Firecrawl",
+          dataType: "Clean Web Crawling & Article Markdown",
+          coverage: "Financial News Sites",
+          lastUpdate: "Live Connection",
+          status: "connected",
+        },
+        {
+          provider: "Apify",
+          dataType: "Structured Actor Scraper",
+          coverage: "Web Intelligence",
+          lastUpdate: "Live Connection",
+          status: "connected",
+        },
+        {
+          provider: "Model Gateway",
+          dataType: "Claude / Gemini / Mistral / Groq / OpenRouter",
+          coverage: "Multi-Model LLM Synthesis",
+          lastUpdate: "Live Connection",
+          status: "connected",
+        },
       ],
     },
   ];

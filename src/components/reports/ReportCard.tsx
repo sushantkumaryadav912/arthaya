@@ -22,7 +22,7 @@ export function ReportCard({ report }: { report: ReportSummary }) {
   const dir = DIR[report.overallSignal];
   const st = STATUS[report.agentStatus];
   return (
-    <Link href={`/reports/${report.id}`} className="group block">
+    <Link href={`/reports/${encodeURIComponent(report.id)}`} className="group block">
       <Card className="h-full transition-colors hover:border-border-strong">
         <CardContent className="space-y-3 py-4">
           <div className="flex items-start justify-between gap-2">

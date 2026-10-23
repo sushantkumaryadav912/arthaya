@@ -60,11 +60,12 @@ export async function getReports(): Promise<ReportSummary[]> {
 }
 
 export async function getReport(id: string): Promise<ResearchReport | null> {
-  const fallback = buildReport(id);
+  const cleanId = decodeURIComponent(id);
+  const fallback = buildReport(cleanId);
   if (await isDemoSessionAsync()) return fallback;
 
   try {
-    const raw = await apiGet<BackendReportDetail>(`/reports/${id}`);
+    const raw = await apiGet<BackendReportDetail>(`/reports/${encodeURIComponent(cleanId)}`);
     if (raw && fallback) {
       return {
         ...fallback,
@@ -80,8 +81,14 @@ export async function getReport(id: string): Promise<ResearchReport | null> {
       };
     }
   } catch (err) {
-    console.warn(`Could not load /reports/${id} from backend:`, err);
+    console.warn(`Could not load /reports/${cleanId} from backend, using fallback:`, err);
   }
 
   return fallback;
 }
+
+export async function getReportForTicker(ticker: string): Promise<ResearchReport | null> {
+  const clean = ticker.trim().toUpperCase();
+  return getReport(`rep_${clean.toLowerCase()}`);
+}
+

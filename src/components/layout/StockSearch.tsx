@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { searchStocks } from "@/lib/api/stockApi";
+import { recordSearchedStock } from "@/lib/utils/searchHistory";
 import type { StockSummary } from "@/lib/types";
 import { cn } from "@/lib/utils/cn";
 import { ValueDelta } from "@/components/common/ValueDelta";
@@ -43,6 +44,7 @@ export function StockSearch({ className }: { className?: string }) {
   const go = (ticker: string) => {
     setOpen(false);
     setQ("");
+    recordSearchedStock(ticker);
     router.push(`/stocks/${ticker}`);
   };
 

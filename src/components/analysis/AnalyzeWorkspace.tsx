@@ -27,6 +27,8 @@ import type { AnalysisDepth, AnalysisHorizon } from "@/lib/types";
 
 const HORIZONS: AnalysisHorizon[] = ["1D", "5D", "20D"];
 const DEPTHS: AnalysisDepth[] = ["quick", "standard", "deep"];
+import { recordSearchedStock } from "@/lib/utils/searchHistory";
+
 const GATEWAY_PROVIDERS = [
   { id: "claude", name: "Claude 3.5 Sonnet (Anthropic)" },
   { id: "gemini", name: "Gemini 1.5 Pro (Google)" },
@@ -35,7 +37,7 @@ const GATEWAY_PROVIDERS = [
   { id: "openrouter", name: "OpenRouter Auto Gateway" },
 ];
 
-const POPULAR_TICKERS = ["AAPL", "NVDA", "TSLA", "MSFT", "RELIANCE", "TCS"];
+const POPULAR_TICKERS = ["M&M", "AAPL", "NVDA", "TSLA", "MSFT", "RELIANCE", "TCS"];
 
 export function AnalyzeWorkspace() {
   const sp = useSearchParams();
@@ -45,13 +47,22 @@ export function AnalyzeWorkspace() {
   const [gatewayProvider, setGatewayProvider] = React.useState("claude");
   const { phase, events, agents, run, error, start, reset } = useAnalysisStream();
 
+  React.useEffect(() => {
+    const initial = sp.get("ticker");
+    if (initial) {
+      recordSearchedStock(initial);
+    }
+  }, [sp]);
+
   const running = phase === "running";
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!ticker.trim()) return;
+    const clean = ticker.trim().toUpperCase();
+    recordSearchedStock(clean);
     start({
-      ticker: ticker.trim().toUpperCase(),
+      ticker: clean,
       horizon,
       depth,
       gateway: gatewayProvider,
