@@ -29,7 +29,7 @@ export const UNIVERSE: Seed[] = [
   { ticker: "TCS", name: "Tata Consultancy Services Ltd.", exchange: "NSE", currency: "INR", base: 4120, sector: "IT Services" },
   { ticker: "INFY", name: "Infosys Ltd.", exchange: "NSE", currency: "INR", base: 1880, sector: "IT Services" },
   { ticker: "HDFCBANK", name: "HDFC Bank Ltd.", exchange: "NSE", currency: "INR", base: 1685, sector: "Banking" },
-  { ticker: "M&M", name: "Mahindra & Mahindra Ltd.", exchange: "NSE", currency: "INR", base: 2840, sector: "Automotive" },
+  { ticker: "M&M", name: "Mahindra & Mahindra Ltd.", exchange: "NSE", currency: "INR", base: 2835, sector: "Automotive" },
   { ticker: "TATAMOTORS", name: "Tata Motors Ltd.", exchange: "NSE", currency: "INR", base: 890, sector: "Automotive" },
 ];
 
