@@ -219,37 +219,44 @@ class JwtAuthProvider implements AuthProvider {
   }
 
   async signIn(email: string, password: string): Promise<AuthUser> {
-    // Only analyst@arthaya.ai triggers demo mode.
     const isDemo = email.trim().toLowerCase() === DEMO_EMAIL;
 
-    // Call live backend dev-login endpoint
-    const backendUrl = `${API_BASE}${API_PREFIX}/auth/dev-login`;
+    // Use Next.js /api/v1/auth/login route which handles backend validation and cookie management
     let res: Response;
     try {
-      res = await fetch(backendUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, role: isDemo ? "analyst" : "quantitative_analyst" }),
-      });
-    } catch {
       res = await fetch("/api/v1/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
+      });
+    } catch {
+      // Fallback direct backend call
+      res = await fetch(`${API_BASE}${API_PREFIX}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
       });
     }
 
-    const data = await res.json();
-    const token = data.access_token || data.token;
+    const data = await res.json().catch(() => ({}));
 
-    if (!res.ok || !token) {
-      throw new Error(data.detail || data.error || "Failed to sign in with backend.");
+    if (!res.ok) {
+      throw new Error(
+        data.detail ||
+        data.error ||
+        "Invalid email or password. Please verify your credentials."
+      );
+    }
+
+    const token = data.access_token || data.token;
+    if (!token) {
+      throw new Error("Authentication failed: No access token received.");
     }
 
     const user: AuthUser = {
       ...(data.user || {}),
       id: data.user?.id || "usr_" + email.split("@")[0],
-      email,
+      email: email.trim().toLowerCase(),
       name: isDemo
         ? "Lead Quantitative Analyst (Demo)"
         : data.user?.name || email.split("@")[0],
@@ -299,27 +306,46 @@ class JwtAuthProvider implements AuthProvider {
       name = nameArg || email.split("@")[0];
     }
 
-    const backendUrl = `${API_BASE}${API_PREFIX}/auth/dev-login`;
     let res: Response;
     try {
-      res = await fetch(backendUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, name, role }),
-      });
-    } catch {
       res = await fetch("/api/v1/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, name, role, organization, marketFocus, horizon, phone, aumRange }),
+        body: JSON.stringify({
+          email,
+          password,
+          name,
+          role,
+          organization,
+          marketFocus,
+          horizon,
+          phone,
+          aumRange
+        }),
+      });
+    } catch {
+      res = await fetch(`${API_BASE}${API_PREFIX}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          password,
+          name,
+          role,
+          organization,
+        }),
       });
     }
 
-    const data = await res.json();
-    const token = data.access_token || data.token;
+    const data = await res.json().catch(() => ({}));
 
-    if (!res.ok || !token) {
+    if (!res.ok) {
       throw new Error(data.detail || data.error || "Failed to register account.");
+    }
+
+    const token = data.access_token || data.token;
+    if (!token) {
+      throw new Error("Registration failed: No access token received.");
     }
 
     // Newly registered accounts ALWAYS trigger real data (isDemo: false)
